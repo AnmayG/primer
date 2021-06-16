@@ -10,7 +10,7 @@
 
 <!-- Move paths section to tools.Rmd. -->
 
-<!-- Explain that parsing failure is designed to be a failure. -->
+<!-- Explain that parsing failure is designed to be a failure. DONE -->
 
 
 Start by loading the packages which we will need in this chapter.
@@ -26,52 +26,9 @@ library(janitor)
 library(skimr)
 ```
 
-
-<!-- DK: Move this section to tools.Rmd. -->
-
-## Absolute and relative file paths
-
-When you read data into R, you first need to tell R where that data lives. Most times, the data will be in a file. The file could live on your computer (local) or somewhere on the internet (remote). 
-
-The place where the file lives on your computer is called the "path". You can think of the path as directions to the file. The path includes both the location of the file and the name of the file itself. There are two kinds of paths: relative and absolute. A *relative* path describes the location of the file relative to where you currently are on the computer. An *absolute* path is where the file is in respect to the base (or root) folder of the computer's filesystem. Absolute paths always start with a forward slash, a "/". 
-
-Consider a file called `report.csv`. Read the file using a relative path:
-
-```
-x <- read_csv("data/report.csv")
-```
-
-Read `report.csv` using an absolute path:
-
-```
-x <- read_csv("/home/preceptor/desktop/projects/data/report.csv")
-```
-
-To ensure your code can be run on a different computer, you should use relative paths. An added bonus is that it's also less typing! This is because the absolute path of a file (the names of folders between the computer's root `/` and the file) isn't usually the same across different computers. For example, suppose Fatima and Jayden are working on a project together on the `report.csv` data. Fatima's file is stored at 
-
-`/home/Fatima/files/report.csv`, 
-
-while Jayden's is stored at 
-
-`/home/Jayden/files/report.csv`.
- 
-Even though Fatima and Jayden stored their files in the same place on their computers, the absolute paths are different due to their different usernames. If Jayden has code that loads the `report.csv` data using an absolute path, the code won't work on Fatima's computer. But the relative path from inside the `files` folder (`files/report.csv`) is the same on both computers; any code that uses relative paths will work on both!
-
-<!-- Include a section about how you're supposed to put \ whenever there's a space, since 90% of people will have a space in their file name. However, because we don't have a section about it, we get a lot of confusion about why somebody's thing isn't working. -->
-
-<!-- DK: Video includes a bunch of good stuff, like ~, ., .., and /. All that should be mentioned here and connected to the terminal tutorial. -->
-
-See this video for another explanation: 
-
-<iframe width="840" height="473" src="https://www.youtube.com/embed/ephId3mYu9o" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-*Source: [Udacity course "Linux Command Line Basics"](https://www.udacity.com/course/linux-command-line-basics--ud595)*
-
-
 ## Writing and Reading Files
 
-Getting data into and out of R is a major part of any real world data science project. 
-
+Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
 
 ### CSV files
 
@@ -90,15 +47,16 @@ Consider the following csv file: `test_2.csv`.
 Here's what `test_2.csv` looks like as a text file:
 
 ```{r, echo = FALSE}
-# I made it so that it doesn/'t show this line of code 
+# I made it so that it doesn\'t show this line of code 
 # This is so it doesn't confuse the readers
 # And it lines up with the introduction that I used without looking weird
+# We set `file_1` to be the full path to `test_2.csv`'s location on the web.
 file_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_2.csv"
   
 readLines(file_1)
 ```
 
-As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail. We set `file_1` to be the full path to `test_2.csv`'s location on the web.
+As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail.
 
 <!-- AG: I'm debating whether I should hide the message by using message = FALSE in this line. On one hand, it's easier to understand within the text, on the other people are going to start panicking when they see a message that wasn't in the primer. I'm not hiding it for now because people panicking is a lot worse than people understanding.-->
 
@@ -157,6 +115,7 @@ delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst
 read_delim(delim_1, delim = "|", col_types = cols(population = col_double(),
                                                   town = col_character()))
 ```
+Both CSV files and their text counterparts are easily transferable between computers and programming languages, but due to their simple nature CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which create a column and end up breaking the table in the end.
 
 ### Excel Files
 
@@ -178,7 +137,7 @@ library(readxl)
 # and then delete the temp directory. That way, you would not have random
 # downloaded files hanging around.
 # The mode = "wb" is a necessary addition for Windows users because Windows is
-# weird. It's not necessary on MacOS and cause an error as well.
+# weird. It's not necessary on MacOS and may cause an error as well.
 download.file(url = "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/excel_1.xlsx", 
               destfile = "example_excel.xlsx", mode = "wb")
 
