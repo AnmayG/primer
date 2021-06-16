@@ -21,6 +21,7 @@ Start by loading the packages which we will need in this chapter.
 library(tidyverse)
 library(primer.data)
 library(lubridate)
+library(dbplyr)
 library(janitor)
 library(skimr)
 ```
@@ -201,7 +202,7 @@ If the .xlsx file has multiple sheets, you have to use the sheet argument to spe
 
 ### RDS
 
-<!-- This is very undescriptive, and since people are unfamiliar with .rds files they may not understand fully. Maybe a sentence like "These files are much more efficient when loading the data back into R and keeps R-specific information such as variable types and attributes." It might also be worth putting in a section about .Rdata files, which allow you to save multiple R objects. So fix it! -->
+<!-- This is very undescriptive, and since people are unfamiliar with .rds files they may not understand fully. Maybe a sentence like "These files are much more efficient when loading the data back into R and keeps R-specific information such as variable types and attributes." It might also be worth putting in a section about .Rdata files, which allow you to save multiple R objects. So fix it! Fixed - AG-->
 
 One very important aspect of R is saving objects into rds files, which store a single R object into a file.
 These files allow us to save R objects such as plots and tibbles into R and then reload the object that it contains later without re-running the code that made it.
@@ -229,11 +230,10 @@ future revision. -->
 
 ```{r}
 # Technically, it's incorrect to save a ggplot plot as a rds file because it has
-# no real benefit. It still just acts as a ggplot and restricts the user to only
-# using ggplot functions. It's more practical to save the data set itself as
-# the people you're sending it to can then generate the graph from the data.
-# We're using a graph here to better show how the rds file can be used to change
-# and transfer the data.
+# no real benefit. It still just acts as a plot and restricts the user to only
+# using ggplot functions. It's more practical to save the data set itself.
+# We're using a graph here to better show how the rds file is unique from other
+# data formats like CSV files.
 
 # write_rds(x = iris_p, file = "iris_p.rds")
 ```
@@ -260,7 +260,7 @@ By saving the `iris_p` plot in a rds file, we eliminate the time needed to calcu
 # file.remove("iris_p.rds")
 ```
 
-It's important to remember that other software and programming languages cannot read rds files naturally, so you should only share rds files with other people who use R.
+There are also Rdata files which can store multiple objects.
 
 ### JSON
 
@@ -313,50 +313,52 @@ SQLite is probably the simplest relational database that one can use in combinat
 
 The first thing you need to do to read data into R from a database is to connect to the database. We do that using `dbConnect()` function from the **DBI** (database interface) package. This does not read in the data, but simply tells R where the database is and opens up a communication channel.
 
-<!-- Why is all of this code commented out? This passage is incomprehensible without it. Because this whole section sucks! Get this to work. -->
+<!-- Why is all of this code commented out? This passage is incomprehensible without it. Because this whole section sucks! Get this to work. Fixed - AG -->
 
+```{r}
+library(DBI)
+library(RSQLite)
+download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/can_lang.db?raw=true",
+              destfile = "example_db.db", mode = "wb")
 
-<!-- ```{r, eval = FALSE} -->
-<!-- library(DBI) -->
-
-<!-- con_lang_data <- dbConnect(RSQLite::SQLite(), "data/can_lang.db") -->
-<!-- ``` -->
-
+con_lang_data <- dbConnect(RSQLite::SQLite(), "example_db.db")
+```
 
 Often relational databases have many tables, and their power comes from the useful ways they can be joined. Thus anytime you want to access data from a relational database, you need to know the table names. You can get the names of all the tables in the database using `dbListTables()`.
 
-<!-- ```{r} -->
-<!-- tables <- dbListTables(con_lang_data) -->
-<!-- tables -->
-<!-- ``` -->
+```{r, con_lang_data}
+library(DBI)
+library(RSQLite)
+tables <- dbListTables(con_lang_data)
+tables
+```
 
 We only get one table name returned,  which tells us that there is only one table in this database. To reference a table in the database to do things like select columns and filter rows, we use the `tbl()` function from the **dbplyr** package. The package **dbplyr** allows us to work with data stored in databases as if they were local data frames, which is useful because we can do a lot with big datasets without actually having to bring these vast amounts of data into your computer! 
 
-<!-- ```{r} -->
-<!-- library(dbplyr) -->
-<!-- lang_db <- tbl(con_lang_data, "lang") -->
-<!-- lang_db -->
-<!-- ``` -->
+```{r}
+lang_db <- tbl(con_lang_data, "lang")
+lang_db
+```
 
 Although it looks like we just got a data frame from the database, we didn't! It's a *reference*, showing us data that is still in the SQLite database (note the first two lines of the output). It does this because databases are often more efficient at selecting, filtering and joining large data sets than R. And typically, the database will not even be stored on your computer, but rather a more powerful machine somewhere on the web. So R is lazy and waits to bring this data into memory until you explicitly tell it. To do so, we use the `collect()` function. 
 
 Here we will filter for only rows in the Aboriginal languages category according to the 2016 Canada Census, and then use `collect()` to finally bring this data into R as a data frame. 
 
-<!-- ```{r} -->
-<!-- aboriginal_lang_db <- filter(lang_db, category == "Aboriginal languages") -->
-<!-- aboriginal_lang_db -->
-<!-- ``` -->
+```{r}
+aboriginal_lang_db <- filter(lang_db, category == "Aboriginal languages")
+aboriginal_lang_db
+```
 
-<!-- ```{r} -->
-<!-- aboriginal_lang_data <- collect(aboriginal_lang_db) -->
-<!-- aboriginal_lang_data -->
-<!-- ``` -->
+```{r}
+aboriginal_lang_data <- collect(aboriginal_lang_db)
+aboriginal_lang_data
+```
 
 Why bother to use the `collect()` function? The data looks pretty similar in both outputs shown above. And **dbplyr** provides lots of functions similar to `filter()` that you can use to directly feed the database reference (i.e. what `tbl()` gives you) into downstream analysis functions (e.g., `ggplot2` for data visualization and `lm` for linear regression modeling). However, this does not work in every case; look what happens when we try to use `nrow` to count rows in a data frame:
 
-<!-- ```{r} -->
-<!-- nrow(aboriginal_lang_db) -->
-<!-- ``` -->
+```{r}
+nrow(aboriginal_lang_db)
+```
 
 or `tail` to preview the last 6 rows of a data frame:
 
@@ -366,6 +368,16 @@ tail(aboriginal_lang_db)
 ```
 ## Error: tail() is not supported by sql sources
 ```
+
+In order to delete and stop using an SQLite server, you need to first disconnect the file from the connection be using `dbDisconnect()` and passing in the connection object as an argument. You can then safely delete the database file from your computer by using `file.remove()`.
+
+```{r, results = "hide"}
+library(DBI)
+library(RSQLite)
+dbDisconnect(con_lang_data)
+file.remove("example_db.db")
+```
+
 Additionally, some operations will not work to extract columns or single values from the reference given by the `tbl` function. Thus, once you have finished your data wrangling of the `tbl()` database reference object, it is advisable to bring it into your local machine's memory using `collect()` as a data frame. 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
@@ -384,6 +396,7 @@ PostgreSQL (also called Postgres) is a very popular and open-source option for r
 Additionally, we must use the **RPostgres** package instead of **RSQLite** in the `dbConnect()` function call. Below we demonstrate how to connect to a version of the `can_mov_db` database, which contains information about Canadian movies (*note - this is a synthetic, or artificial, database*).
 
 <!-- I think this database is broken. When I tried to run it, it gave me a Connection timed out error. So what should we do? -->
+<!-- AG: This is likely because we were previously pulling from a dead server. We may need to choose a different database, but I'm not sure which one to choose. I'm leaning towards an Amazon or Google database, but there are test databases like the Pagila test database. -->
 
 ```
 library(RPostgres)
@@ -500,7 +513,7 @@ In the first part of this chapter, we learned how to read in data from plain tex
 
 ### HTML and CSS selectors
 
-<!-- AG: I realize that there's probably been a lot of work put into this, but if we're not allowed to web scrape off Craigslist why bother using it as an example? Just use Wikipedia as the example and show how the TOS differ. -->
+<!-- AG: I'm thinking of just using Wikipedia as the example and show how the TOS differs from Craigslist to show whether something is legal or not. This is fine too, and it actually has some advantages as well. -->
 
 Before we jump into scraping, let's learn a little bit about what the "source code" of a website looks like. Say we are interested in knowing the average rental price (per square footage) of the most recently available one-bedroom apartments in Vancouver from https://vancouver.craigslist.org. When we visit the Vancouver Craigslist website and search for one-bedroom apartments, this is what we are shown:
 
