@@ -8,25 +8,42 @@
 
 <!-- TODO: -->
 
-<!-- Move paths section to tools.Rmd. -->
+<!-- Read misc/style.Rmd. -->
 
+<<<<<<< HEAD
 <!-- Explain that parsing failure is designed to be a failure. DONE -->
+=======
+<!-- Delete the PostgreSQL stuff. Learning how to connect to one database is enough. (Of course, in a sentence, you can mention other databases and what not.) -->
+
+<!-- Add a subsection within databases that shows SQL code. -->
+
+<!-- Keep parts which show write_csv and write_rds. And then delete those files with file.remove. -->
+
+<!-- Database section: Only reading from. Not setting up. Not writing to. Show how to connect. Discuss what connection is doing. Discuss (briefly) other databases. Show how to get general information, like list of tables and other stuff. Last section is SQL. What it is. Bunch of examples of using SQL on the database. -->
+
+<!-- Rewrite entire webscraping section. Delete everything you don't like. Look closely at the current version of the tutorial. Rewrite this section so that it will be easy to fold the tutorial questions into it at some point in the future. -->
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 
 
 Start by loading the packages which we will need in this chapter.
 
-<!-- DK: Do we need all these packages? Only these packages? -->
 
 ```{r, message = FALSE}
 library(tidyverse)
 library(primer.data)
 library(lubridate)
 library(dbplyr)
+<<<<<<< HEAD
 library(janitor)
 library(skimr)
 ```
 
 ## Writing and Reading Files
+=======
+```
+
+## Writing and reading files
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
 
@@ -55,10 +72,16 @@ file_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/
   
 readLines(file_1)
 ```
+<<<<<<< HEAD
 
 As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail.
 
 <!-- AG: I'm debating whether I should hide the message by using message = FALSE in this line. On one hand, it's easier to understand within the text, on the other people are going to start panicking when they see a message that wasn't in the primer. I'm not hiding it for now because people panicking is a lot worse than people understanding.-->
+=======
+
+As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail.
+
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 
 ```{r}
 file_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_2.csv"
@@ -96,6 +119,7 @@ Here's another file named `delim_1`, which uses the `|` to separate the lines in
 
 ```{r, echo = FALSE}
 delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/delim_1.txt"
+<<<<<<< HEAD
 
 readLines(delim_1)
 ```
@@ -112,6 +136,24 @@ With `read_delim()`, we specify the first argument as the path to the file, as d
 
 delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/delim_1.txt"
 
+=======
+
+readLines(delim_1)
+```
+
+With `read_delim()`, we specify the first argument as the path to the file, as done with `read_csv()`. Then we provide values to the `delim` argument to have the code use `|` as the separator instead of the `,`.
+
+```{r}
+# Because delim_1 uses pipes to separate values, 
+# we can just use that as our delim value.
+# However, for more complex symbols like tab, 
+# we use something different like "\\t"
+# This varies for every symbol, but you can 
+# find most delim values on the internet.
+
+delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/delim_1.txt"
+
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 read_delim(delim_1, delim = "|", col_types = cols(population = col_double(),
                                                   town = col_character()))
 ```
@@ -125,7 +167,7 @@ In order to write excel files you have to install complex packages, and they are
 
 Reading Excel files is easy. To do so, we use the `read_excel()` function from the **readxl** package.
 
-<!-- Add mode = "wb". I got this fix from https://github.com/tidyverse/readxl/issues/374#issuecomment-336597554. You may want to include this, especially since people are just going to copy-paste it into their own PCs to test it out. My PC is a Windows 64-bit if it matters. Additionally, shouldn't the commented portion be out with the rest of the text? I feel like it's pretty important, especially with the "we cannot read". The tempdir() part is also very confusing if you don't have an example as a companion. Agreed! Fixed- AG.-->
+<!-- I tried to merge with the thign and got the weird stuff with the head and what looks like an API key for some reason. I'm hoping this isn't a bad thing. -->
 
 ```{r}
 library(readxl)
@@ -135,9 +177,21 @@ library(readxl)
 # directory. Note that the "proper" way of handling this would be to create a
 # temp directory with tempdir(), download the file into that directory, read it,
 # and then delete the temp directory. That way, you would not have random
+
+# <<<<<<< HEAD
+
 # downloaded files hanging around.
 # The mode = "wb" is a necessary addition for Windows users because Windows is
 # weird. It's not necessary on MacOS and may cause an error as well.
+
+# =======
+
+# downloaded files hanging around. The mode = "wb" is a necessary addition for
+# Windows users because Windows is weird. It's not necessary on MacOS and may
+# cause an error as well.
+
+# >>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
+
 download.file(url = "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/excel_1.xlsx", 
               destfile = "example_excel.xlsx", mode = "wb")
 
@@ -154,9 +208,8 @@ read_excel(path = "example_excel.xlsx")
 file.remove("example_excel.xlsx")
 ```
 
-<!-- AG: Again, I would like to use an example. Examples make everything better, but they do mean more work on our part. Yes! Maybe? -->
 
-If the .xlsx file has multiple sheets, you have to use the sheet argument to specify the sheet number or name. 
+If the .xlsx file has multiple sheets, you have to use the `sheet` argument to specify the sheet number or name. 
 
 
 ### RDS
@@ -169,6 +222,7 @@ This is especially useful for when you're dealing with bulk data and want to sav
 With a rds file, you save the entire object, allowing you to do more things with it later without having to go through all of the code.
 
 Take the following R object, a graph of the `iris` data set.
+<<<<<<< HEAD
 
 ```{r}
 iris_p <- iris %>% 
@@ -180,12 +234,29 @@ iris_p <- iris %>%
 iris_p
 ```
 
+=======
+
+```{r}
+iris_p <- iris %>% 
+  ggplot(aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_jitter() +
+  labs(title = "Sepal Dimensions of Various Species of Iris",
+       x = "Sepal Length",
+       y = "Sepal Width")
+iris_p
+```
+
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 When we save to a rds file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. The end of the path argument is the name that you want to use for the file.
 
 <!-- AG: I've noticed that we never really write any information into the textbook, 
 however I'm demonstrating reading and writing from an rds file. This may not be good
 practice, so I'm commenting out all of the code that involves it but leaving it in for 
+<<<<<<< HEAD
 future revision. -->
+=======
+future revision. Add code back in. -->
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 
 ```{r}
 # Technically, it's incorrect to save a ggplot plot as a rds file because it has
@@ -201,6 +272,7 @@ future revision. -->
 
 ```{r}
 # read_rds(file = "iris_p.rds")
+<<<<<<< HEAD
 ```
 
 We can then use that R object in more operations, such as adding a trend line.
@@ -219,6 +291,26 @@ By saving the `iris_p` plot in a rds file, we eliminate the time needed to calcu
 # file.remove("iris_p.rds")
 ```
 
+=======
+```
+
+We can then use that R object in more operations, such as adding a trend line.
+
+```{r}
+# iris_p <- read_rds(file = "iris_p.rds")
+iris_p + 
+  geom_smooth(method = "loess",
+              formula = y ~ x,
+              se = FALSE)
+```
+
+By saving the `iris_p` plot in a rds file, we eliminate the time needed to calculate and generate that plot again because we can use the saved information. We can then use the object by reading the file back into r and using it like any normal plot, adding new layers and doing new operations.
+
+```{r, include = FALSE}
+# file.remove("iris_p.rds")
+```
+
+>>>>>>> 4c15a0be9ed5fb1fb69544985b95c36b129f72a4
 There are also Rdata files which can store multiple objects.
 
 ### JSON
@@ -264,7 +356,7 @@ json_format_ex <-
 fromJSON(json_format_ex) 
 ```
 
-## Reading data from a database
+## Databases
 
 ### Reading data from a SQLite database
 
@@ -355,6 +447,8 @@ PostgreSQL (also called Postgres) is a very popular and open-source option for r
 Additionally, we must use the **RPostgres** package instead of **RSQLite** in the `dbConnect()` function call. Below we demonstrate how to connect to a version of the `can_mov_db` database, which contains information about Canadian movies (*note - this is a synthetic, or artificial, database*).
 
 <!-- I think this database is broken. When I tried to run it, it gave me a Connection timed out error. So what should we do? -->
+<!-- AG: This is likely because we were previously pulling from a dead server. We may need to choose a different database, but I'm not sure which one to choose. I'm leaning towards an Amazon or Google database, but there are test databases like the Pagila test database. -->
+
 <!-- AG: This is likely because we were previously pulling from a dead server. We may need to choose a different database, but I'm not sure which one to choose. I'm leaning towards an Amazon or Google database, but there are test databases like the Pagila test database. -->
 
 ```
@@ -466,6 +560,8 @@ For example, [there are billions of Google searches conducted daily](https://www
 
 
 ## Webscraping
+
+<!-- Mention rvest here. -->
 
 In the first part of this chapter, we learned how to read in data from plain text files that are usually "rectangular" in shape using the **tidyverse** `read_*` functions. Sadly, not all data comes in this simple format, but we can happily use many other tools to read in more messy/wild data formats. The formal name for gathering non-rectangular data from the web and transforming it into a more useful format for data analysis is **web scraping**.
 
@@ -629,7 +725,12 @@ To get a certain set of weather data from the Iowa Environmental Mesonet, you ca
 
 When you are making an HTTP request using the `GET()` or `POST()` functions from the **httr** package, you can include the key-value pairs for any query parameters as a list object in the `query` argument of the function. For example, suppose you want to get wind speed in miles per hour (data = "sped") for Denver, CO, (station = "DEN") for the month of June 2016 (year1 = "2016", month1 = "6", etc.) in Denver’s local time zone (tz = "America/Denver") and in a comma-separated file (format = "comma"). To get this weather dataset, you can run:
 
-<!-- AG: The httr library output is still there, it looks nicer to hide it. It's fine either way though. -->
+
+
+```{r, message = FALSE}
+library(httr)
+```
+
 
 ```{r}
 library(httr)
@@ -690,4 +791,4 @@ Information for this section on API's was taken from *Mastering Software Develop
 
 ## Summary
 
-<!-- AG: Summaries are cool, the summary for this one would probably be about how you can use data from the internet to generate enticing R plots and cool things. It may be an interesting idea to have a link to all of the final projects created from this data camp as an example from real-world students using real-world data. That's probably a privacy violation though. -->
+<!-- One paragraph for each subsection. Each paragraph tries to provide a brief summary, including package names and key commands. -->
