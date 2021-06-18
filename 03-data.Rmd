@@ -386,7 +386,10 @@ So let's try pulling in a database and seeing what we can do with it.
 ```{r}
 library(DBI)
 library(RSQLite)
-download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true")
+download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true",
+              dest = "operations.db", mode = "wb")
+
+con <- dbConnect(RSQLite::SQLite(), "operations.db")
 ```
 
 
