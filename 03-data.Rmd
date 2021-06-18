@@ -28,6 +28,7 @@ library(lubridate)
 library(dbplyr)
 library(janitor)
 library(skimr)
+library(knitr)
 ```
 
 ## Writing and Reading Files
@@ -237,8 +238,8 @@ read_rds(file = "iris_p.rds")
 We can then use that R object in more operations, such as adding a trend line.
 
 ```{r}
-iris_p <- read_rds(file = "iris_p.rds")
-iris_p + 
+rds_p <- read_rds(file = "iris_p.rds")
+rds_p + 
   geom_smooth(method = "loess",
               formula = y ~ x,
               se = FALSE)
@@ -297,9 +298,15 @@ fromJSON(json_format_ex)
 
 ## Databases
 
+A relational database is a database that has the tables interact with one another based on common data, allowing you to create custom tables from an existing set of records. For example, a relational database may hold multiple tables that use the same ID to keep track of different information, like one table having an ID and a movie name while another has the ID and the rating. You can then combine those two in your code, creating a table with the ID, name, and rating. This allows the person who made the database to easily put in new data as well as allow you to pull out some data at a time without loading the entire database.
+
+It's common to use and interact with these databases in the real world due to most businesses using relational databases to keep track of their data and to update it at their leisure. It's not uncommon for databases to hold thousands or even millions of rows due to the need to keep track of data.
+
+<!-- Link to writing databases, saving it here for now https://www.datacamp.com/community/tutorials/sqlite-in-r -->
+
 ### Reading data from a SQLite database
 
-SQLite is probably the simplest relational database that one can use in combination with R. SQLite databases are self-contained and usually stored and accessed locally on one computer. Data is usually stored in a file with a `.db` extension. Similar to Excel files, these are not plain text files and cannot be read in a plain text editor. 
+SQLite is probably the simplest relational database that one can use in combination with R. SQLite databases are self-contained and usually stored and accessed locally on one computer, instead of on the internet or through the cloud. Data is usually stored in a file with a `.db` extension. Similar to Excel files, these are not plain text files and cannot be read in a plain text editor. 
 
 The first thing you need to do to read data into R from a database is to connect to the database. We do that using `dbConnect()` function from the **DBI** (database interface) package. This does not read in the data, but simply tells R where the database is and opens up a communication channel.
 
@@ -376,24 +383,58 @@ Additionally, some operations will not work to extract columns or single values 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
 
-###Doing operations on SQL Databases
+###Doing operations on SQLite Databases
 
 Now that we've figured out how to get data from a database, let's look at how to wrangle data within that database.
 
-Because databases normally contain large amounts of data, it's advisable to do your wrangling before you use `collect()` to transform the database table into a tibble. This stops you from pulling large amounts of data onto your computer and not doing anything with it.
+Because databases normally contain large amounts of data, it's advisable to do your wrangling before you use `collect()` to transform the database table into a tibble. This stops you from pulling large amounts of data onto your computer and just ignoring it.
 
-So let's try pulling in a database and seeing what we can do with it.
+So let's try pulling in a database and see how we can manipulate it.
+
 ```{r}
 library(DBI)
 library(RSQLite)
-download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true",
-              dest = "operations.db", mode = "wb")
+# This is commented out because it just causes a 404 error since this technically doesn't exist yet
+# download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true",
+#               dest = "employee_data.db", mode = "wb")
 
-con <- dbConnect(RSQLite::SQLite(), "operations.db")
+#change this to just employee_data.db
+con <- dbConnect(RSQLite::SQLite(), "03-data/data/employee_data.db")
+```
+
+First off, look at what data this database holds.
+
+```{r}
+dbListTables(con)
+```
+We can use this list of table names and access each table one by one.
+
+These are randomly generated employee reviews and names, so they are very nonsensical.
+
+<!-- AG: This looks pretty long once it's knit, as there's like 3 tables in a row. -->
+<!-- AG: Since the only sample databases I found were copyrighted and stuff like that, I decided that it was easier to just make my own SQLite database using SQLite Studio and programs like that. I then used random generators like https://randommer.io/Text/Review to copy and paste in data or just used the "populate" function to randomly generate data. -->
+
+```{r}
+# The `kable()` functions are just to make the table look nice and are not strictly necessary
+t1 <- head(tbl(con, "person"))
+kable(t1, caption = "\"Person\" Table")
+t2 <- head(tbl(con, "ratings"))
+kable(t2, caption = "\"Ratings\" Table")
+t3 <- head(tbl(con, "tasks"))
+kable(t3, caption = "\"Tasks\" Table")
+```
+ 
+As you can see, each table has a common column: the ID column. However, they all have different information linked to that ID, such as "person" having the names of employees and "ratings" having a review for the employee.
+
+```{sql, connection = con, output.var = "mydataframe"}
+SELECT * FROM "ratings"
+```
+
+```{r}
+kable(head(mydataframe))
 ```
 
 
- 
 ### Reading data from a PostgreSQL database 
 
 PostgreSQL (also called Postgres) is a very popular and open-source option for relational database software. Unlike SQLite, PostgreSQL uses a client–server database engine, as it was designed to be used and accessed on a network. This means that you have to provide more information to R when connecting to Postgres databases. The additional information that you need to include when you call the `dbConnect()` is listed below:
