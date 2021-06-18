@@ -8,15 +8,11 @@
 
 <!-- TODO: -->
 
-<!-- Read misc/style.Rmd. DONE-->
-
 <!-- Delete the PostgreSQL stuff. Learning how to connect to one database is enough. (Of course, in a sentence, you can mention other databases and what not.) -->
 
-<!-- AG: I'm going to be doing the following three parts when my pull request goes through because I'm going to be loading in a database through       SQLite for these examples. It's in the pull request as a file called chinook.db in 03-data/data/chinook.db -->
+<!-- AG: I'm going to be doing the following three parts when my pull request goes through because I'm going to be loading in a database through SQLite for these examples. It's in the pull request as a file called chinook.db in 03-data/data/chinook.db -->
 
 <!-- Add a subsection within databases that shows SQL code. -->
-
-<!-- Keep parts which show write_csv and write_rds. And then delete those files with file.remove. DONE-->
 
 <!-- Database section: Only reading from. Not setting up. Not writing to. Show how to connect. Discuss what connection is doing. Discuss (briefly) other databases. Show how to get general information, like list of tables and other stuff. Last section is SQL. What it is. Bunch of examples of using SQL on the database. -->
 
@@ -320,8 +316,6 @@ con_lang_data <- dbConnect(RSQLite::SQLite(), "example_db.db")
 Often relational databases have many tables, and their power comes from the useful ways they can be joined. Thus anytime you want to access data from a relational database, you need to know the table names. You can get the names of all the tables in the database using `dbListTables()`.
 
 ```{r, con_lang_data}
-library(DBI)
-library(RSQLite)
 tables <- dbListTables(con_lang_data)
 tables
 ```
@@ -362,11 +356,19 @@ tail(aboriginal_lang_db)
 ## Error: tail() is not supported by sql sources
 ```
 
+These functions only work when we use the version that we used collect() on:
+
+```{r}
+nrow(aboriginal_lang_data)
+```
+
+```{r}
+tail(aboriginal_lang_data)
+```
+
 In order to delete and stop using an SQLite server, you need to first disconnect the file from the connection be using `dbDisconnect()` and passing in the connection object as an argument. You can then safely delete the database file from your computer by using `file.remove()`.
 
 ```{r, results = "hide"}
-library(DBI)
-library(RSQLite)
 dbDisconnect(con_lang_data)
 file.remove("example_db.db")
 ```
@@ -374,6 +376,21 @@ file.remove("example_db.db")
 Additionally, some operations will not work to extract columns or single values from the reference given by the `tbl` function. Thus, once you have finished your data wrangling of the `tbl()` database reference object, it is advisable to bring it into your local machine's memory using `collect()` as a data frame. 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
+
+###Doing operations on SQL Databases
+
+Now that we've figured out how to get data from a database, let's look at how to wrangle data within that database.
+
+Because databases normally contain large amounts of data, it's advisable to do your wrangling before you use `collect()` to transform the database table into a tibble. This stops you from pulling large amounts of data onto your computer and not doing anything with it.
+
+So let's try pulling in a database and seeing what we can do with it.
+```{r}
+library(DBI)
+library(RSQLite)
+download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true")
+```
+
+
  
 ### Reading data from a PostgreSQL database 
 
@@ -384,7 +401,6 @@ PostgreSQL (also called Postgres) is a very popular and open-source option for r
 - `port` - the communication endpoint between R and the PostgreSQL database (this is typically 5432 for PostgreSQL)
 - `user` - the username for accessing the database
 - `password` - the password for accessing the database
-
 
 Additionally, we must use the **RPostgres** package instead of **RSQLite** in the `dbConnect()` function call. Below we demonstrate how to connect to a version of the `can_mov_db` database, which contains information about Canadian movies (*note - this is a synthetic, or artificial, database*).
 
