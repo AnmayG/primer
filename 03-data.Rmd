@@ -74,6 +74,7 @@ When you want to remove a file from your system, use `file.remove()`.
 ```{r}
 file.remove("my_csv.csv")
 ```
+
 #### Arguments for CSV files
 
 Sometimes, CSV files will not be what you want. Maybe they have the wrong column names, have information at the top of the file, or have comments interspersed within the file.
@@ -121,8 +122,6 @@ read_csv(file = file_2,
                           b = col_double(),
                           c = col_double()))
 ```
-
-
 
 When our tabular data comes in a different format, we can use the `read_delim()` function instead. For example, a different version of `test_2.csv` could exist that has no column names and uses pipes (`|`) as the delimiter instead of commas.
 
