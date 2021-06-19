@@ -31,9 +31,6 @@ library(skimr)
 library(knitr)
 ```
 
-## Writing and Reading Files
-
-
 ## Writing and reading files
 
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
@@ -383,7 +380,7 @@ Additionally, some operations will not work to extract columns or single values 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
 
-###Doing operations on SQLite Databases
+###Doing operations on SQLite databases
 
 Now that we've figured out how to get data from a database, let's look at how to wrangle data within that database.
 
@@ -398,8 +395,8 @@ library(RSQLite)
 # download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true",
 #               dest = "employee_data.db", mode = "wb")
 
-#change this to just employee_data.db
-con <- dbConnect(RSQLite::SQLite(), "03-data/data/employee_data.db")
+# change this to just employee_data.db
+con <- dbConnect(RSQLite::SQLite(), "03-data/data/chinook.db")
 ```
 
 First off, look at what data this database holds.
@@ -407,27 +404,21 @@ First off, look at what data this database holds.
 ```{r}
 dbListTables(con)
 ```
-We can use this list of table names and access each table one by one.
-
-These are randomly generated employee reviews and names, so they are very nonsensical.
-
-<!-- AG: This looks pretty long once it's knit, as there's like 3 tables in a row. -->
-<!-- AG: Since the only sample databases I found were copyrighted and stuff like that, I decided that it was easier to just make my own SQLite database using SQLite Studio and programs like that. I then used random generators like https://randommer.io/Text/Review to copy and paste in data or just used the "populate" function to randomly generate data. -->
+There are 13 tables in this database. Let's access the first couple of tables, just so that we can get a good look at them and see how they're structured..
 
 ```{r}
-# The `kable()` functions are just to make the table look nice and are not strictly necessary
-t1 <- head(tbl(con, "person"))
-kable(t1, caption = "\"Person\" Table")
-t2 <- head(tbl(con, "ratings"))
-kable(t2, caption = "\"Ratings\" Table")
-t3 <- head(tbl(con, "tasks"))
-kable(t3, caption = "\"Tasks\" Table")
+# The kable() function is not strictly necessary, it's just there to make the table look nice.
+t1 <- head(tbl(con, "albums"))
+kable(t1)
+t2 <- head(tbl(con, "artists"))
+kable(t2)
 ```
  
-As you can see, each table has a common column: the ID column. However, they all have different information linked to that ID, such as "person" having the names of employees and "ratings" having a review for the employee.
+As you can see, each table has a common column: the `ArtistId` column. However, they all have different information linked to that ID, such as "albums" having the albums that artist produced and "artists" having the name of that artist.
+
+If you want to see the full relationship diagram of this database, look here: http://schemaspy.org/sample/diagrams/summary/relationships.real.large.png
 
 ```{sql, connection = con, output.var = "mydataframe"}
-SELECT * FROM "ratings"
 ```
 
 ```{r}
