@@ -380,7 +380,7 @@ Additionally, some operations will not work to extract columns or single values 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
 
-###Doing operations on SQLite databases
+###Interacting with SQLite databases
 
 Now that we've figured out how to get data from a database, let's look at how to wrangle data within that database.
 
@@ -391,12 +391,11 @@ So let's try pulling in a database and see how we can manipulate it.
 ```{r}
 library(DBI)
 library(RSQLite)
-# This is commented out because it just causes a 404 error since this technically doesn't exist yet
-# download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/employee_data.db?raw=true",
-#               dest = "employee_data.db", mode = "wb")
+# Again, use mode = "wb" if you're using a Windows operating system.
+download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/chinook.db?raw=true",
+             dest = "chinook.db", mode = "wb")
 
-# change this to just employee_data.db
-con <- dbConnect(RSQLite::SQLite(), "03-data/data/chinook.db")
+con <- dbConnect(RSQLite::SQLite(), "chinook.db")
 ```
 
 First off, look at what data this database holds.
@@ -407,134 +406,210 @@ dbListTables(con)
 There are 13 tables in this database. Let's access the first couple of tables, just so that we can get a good look at them and see how they're structured..
 
 ```{r}
-# The kable() function is not strictly necessary, it's just there to make the table look nice.
-t1 <- head(tbl(con, "albums"))
-kable(t1)
-t2 <- head(tbl(con, "artists"))
-kable(t2)
+albums <- tbl(con, "albums")
+albums
+artists <- tbl(con, "artists")
+artists
 ```
  
 As you can see, each table has a common column: the `ArtistId` column. However, they all have different information linked to that ID, such as "albums" having the albums that artist produced and "artists" having the name of that artist.
 
-If you want to see the full relationship diagram of this database, look here: http://schemaspy.org/sample/diagrams/summary/relationships.real.large.png
+Here is the [full relationship diagram](http://schemaspy.org/sample/diagrams/summary/relationships.real.large.png) of the database that we're using.
 
-```{sql, connection = con, output.var = "mydataframe"}
+Let's go over some of the operations that you can do on a SQLite database.
+
+#### Using dbplyr
+
+We've already seen how you can use the **dbpylr** package to get a table from a database, but let's look at how you can also use it to do operations on databases as well.
+
+The **dbpylr** package allows you to use many of the same functions from the **tidyverse** like `select()`, `filter()`, `mutate()` without any issues, making it the easiest to do operations with.
+
+Here's an example of using the **dbpylr** package to get the number of albums each artist has created.
+
+```{r} 
+# You can keep a column during the summarize() if you just put the name equal to itself.
+# This code is deliberately long in order to show the common functions that we use.
+band_albums <- tbl(con, "albums") %>%
+                 inner_join(tbl(con, "artists"), by = "ArtistId") %>%
+                 select("AlbumId", "ArtistId", "Title", "Name") %>%
+                 group_by(ArtistId) %>%
+                 summarize(Name = Name, num_albums = n()) %>%
+                 mutate(artist_name = Name) %>%
+                 mutate(artist_id = ArtistId) %>%
+                 filter(num_albums > 3) %>%
+                 arrange(desc(num_albums)) %>%
+                 select(artist_id, artist_name, num_albums)
+band_albums
 ```
+
+These are the functions that we're already familiar with using, and they work just as well on database tables as well.
+
+However, there are cases where you will have to use SQL code to accomplish certain tasks.
+
+#### Using SQL code
+<!-- AG: I'm devoting a paragraph to SQL and what it is. I'm doing this because I don't want people to misunderstand that you can just use dbplyr for everything, as well as that dbplyr is actually doing the SQL code for you. -->
+
+<!-- AG: The caption seemed to knit ok, but I'm not sure if I should use it. -->
+
+```{r, echo = FALSE, fig.cap="DROP TABLE is a particularly infamous SQL command."}
+knitr::include_graphics("https://imgs.xkcd.com/comics/exploits_of_a_mom.png")
+```
+
+First off, let's try to understand what SQLite and SQL really is.
+
+<!-- AG: Is it OK to write "in this course" or should I put something else? -->
+
+SQL, or **S**tructured **Q**uery **L**anguage, is a coding language that works to build the relational databases that we've been using so far. SQLite is a special type of database that you can download onto your computer that uses SQL as its basic structure and basic language. Essentially, SQLite uses SQL code to do the things that it does.
+
+While you shouldn't need to write SQL code in this course, it's very common to read from an SQL database in order to access data so that you can graph it.
+
+SQL runs through something known as a **query**, a line of code that pulls in information from the database. This is effectively asking the database for a specific set of data. This is what's known as a `SELECT` command, which "selects" data from the database and brings it into your computer for your use.
+
+```{sql, connection = con}
+-- This code is written in SQL syntax, so it won't work if you just put it into R. 
+-- We'll be going over how to write SQL in R later in this section.
+SELECT AlbumId, Title, ArtistId FROM albums
+```
+
+You can then modify these queries to do operations like joins.
+```{sql, connection = con}
+-- This does the same thing as the inner join from Chapter 2 Wrangling
+-- Here we're joining the albums and the artists table by the ArtistId column
+SELECT ArtistId, Name, Title FROM (
+  SELECT Title, albums.ArtistId AS "ArtistId", "Name"
+  FROM albums
+  INNER JOIN artists
+  ON albums.ArtistId = artists.ArtistId
+)
+```
+
+>If you're interested in what SQL statements mean and how to write SQL code, visit this [tutorial](https://www.sqlitetutorial.net/).
+
+In fact, the `dbplyr` commands actually use SQL code to create their effect.
+You can run `show_query()` to see the SQL code, or the *query* that `dbplyr` produces.
 
 ```{r}
-kable(head(mydataframe))
+show_query(band_albums)
 ```
 
-
-### Reading data from a PostgreSQL database 
-
-PostgreSQL (also called Postgres) is a very popular and open-source option for relational database software. Unlike SQLite, PostgreSQL uses a client–server database engine, as it was designed to be used and accessed on a network. This means that you have to provide more information to R when connecting to Postgres databases. The additional information that you need to include when you call the `dbConnect()` is listed below:
-
-- `dbname` - the name of the database (a single PostgreSQL instance can host more than one database)
-- `host` - the URL pointing to where the database is located
-- `port` - the communication endpoint between R and the PostgreSQL database (this is typically 5432 for PostgreSQL)
-- `user` - the username for accessing the database
-- `password` - the password for accessing the database
-
-Additionally, we must use the **RPostgres** package instead of **RSQLite** in the `dbConnect()` function call. Below we demonstrate how to connect to a version of the `can_mov_db` database, which contains information about Canadian movies (*note - this is a synthetic, or artificial, database*).
+However, you can't do everything from SQL through the `dbplyr` package. For example, you can't use the `slice()` command.
 
 ```
-library(RPostgres)
-can_mov_db_con <- dbConnect(RPostgres::Postgres(), dbname = "can_mov_db",
-                        host = "r7k3-mds1.stat.ubc.ca", port = 5432,
-                        user = "user0001", password = '################')
+slice(band_albums, 1:10)
+```
+```
+## Error: slice() is not supported on database backends
 ```
 
-### Interacting with a database
+This is possible in an SQL database. There are a couple of ways to run SQL code in R, but the easiest way is by using the `dbGetQuery()` function from the **DBI** library.
 
-After opening the connection, everything looks and behaves almost identically to when we were using an SQLite database in R. For example, we can again use `dbListTables()` to find out what tables are in the `can_mov_db` database:
+<!-- AG: This is my first time doing SQL code and I'm more experienced with Java/Python, so I formatted it like how Java and Python are formatted with the parentheses acting as brackets instead. This may be heresy in the SQL world, so please tell me if I have to fix it. -->
 
-```
-dbListTables(can_mov_db_con)
-```
-
-```
- [1] "themes"            "medium"           "titles"     "title_aliases"       "forms"            
- [6] "episodes"          "names"      "names_occupations" "occupation"       "ratings" 
-```
-
-We see that there are 10 tables in this database. Let's first look at the `"ratings"` table to find the lowest rating that exists in the `can_mov_db` database:
-
-```
-ratings_db <- tbl(can_mov_db_con, "ratings")
-ratings_db
-```
-
-```
-# Source:   table<ratings> [?? x 3]
-# Database: postgres [user0001@r7k3-mds1.stat.ubc.ca:5432/can_mov_db]
-   title              average_rating num_votes
-   <chr>                    <dbl>     <int>
- 1 The Grand Seduction       6.6       150
- 2 Rhymes for Young Ghouls   6.3      1685
- 3 Mommy                     7.5      1060
- 4 Incendies                 6.1      1101
- 5 Bon Cop, Bad Cop          7.0       894
- 6 Goon                      5.5      1111
- 7 Monsieur Lazhar           5.6       610
- 8 What if                   5.3      1401
- 9 The Barbarian Invations   5.8        99
-10 Away from Her             6.9      2311
-# … with more rows
+```{r}
+# This code is just copy-pasted from the earlier dbplyr code so you can best understand it.
+# It's also organized for readability, with the parentheses having their own lines.
+# This isn't how SQL code is formatted normally, but it's intended for readability.
+# This is probably more understandable for people who have Java or Python experience
+dbGetQuery(con, "
+SELECT `artist_id`, `artist_name`, `num_albums` FROM (
+  SELECT `ArtistId`, `Name`, `num_albums`, `artist_name`, `ArtistId` AS `artist_id` FROM (
+    SELECT `ArtistId`, `Name`, `num_albums`, `Name` AS `artist_name` FROM (
+      SELECT `ArtistId`, `Name`, COUNT(*) AS `num_albums` FROM (
+        SELECT `AlbumId`, `ArtistId`, `Title`, `Name` FROM (
+          SELECT `AlbumId`, `Title`, `LHS`.`ArtistId` AS `ArtistId`, `Name` FROM `albums` AS `LHS`
+          INNER JOIN `artists` AS `RHS` ON (`LHS`.`ArtistId` = `RHS`.`ArtistId`)
+        )
+      )
+      GROUP BY `ArtistId`
+    )
+  )
+)
+WHERE (`num_albums` > 3.0)
+ORDER BY `num_albums` DESC
+")
 ```
 
-To find the lowest rating that exists in the data base, we first need to extract the `average_rating` column using `select()`:
+This method allows you to only use R code within your project, making it easier.
 
+You can also use SQL code directly in your project by changing the header in an Rmarkdown file. When you code in an Rmarkdown file, you create chunks that look like this:
 ```
-avg_rating_db <- select(ratings_db, average_rating)
-avg_rating_db
-```
-
-```
-# Source:   lazy query [?? x 1]
-# Database: postgres [user0001@r7k3-mds1.stat.ubc.ca:5432/can_mov_db]
-   average_rating
-            <dbl>
- 1            6.6
- 2            6.3
- 3            7.5
- 4            6.1
- 5            7.0
- 6            5.5
- 7            5.6
- 8            5.3
- 9            5.8
-10            6.9
-# … with more rows
+## ```{r}
+##
+## ```
 ```
 
-Next we use `min()` to find the minimum rating in that column:
+You can code in SQL by changing the chunk to look like this:
 
 ```
-min(avg_rating_db)
+## ```{sql, connection = con, output.var = "your_variable_name"}
+## 
+## ```
 ```
 
+This allows you to write SQL code in genuine SQL syntax and save the output to a variable.
 ```
-Error in min(avg_rating_db) : invalid 'type' (list) of argument
-```
-
-Instead of the minimum, we get an error! This is another example of when we need to use the `collect()` function to bring the data into R for further computation:
-
-```
-avg_rating_data <- collect(avg_rating_db)
-min(avg_rating_data)
+## ```{sql, connection = con, output.var = "your_variable_name"}
+## SELECT * FROM albums
+## ```
 ```
 
-```
-[1] 1
+```{sql, connection = con, output.var = "your_variable_name", echo = FALSE}
+-- SQL uses a semicolon to show the end of the statements
+-- However, you don't need to include that for the dbGetQuery() statemetn
+SELECT * FROM albums;
 ```
 
-We see the lowest rating given to a movie is 1, indicating that it must have been a really bad movie...
+You can then use that variable in your R code.
+```{r}
+your_variable_name
+```
 
+Coding in SQL allows you to do the things that the **dbplyr** package doesn't, such as only using certain rows. If you add `LIMIT 10;` at the end of the query (the first `SELECT` statement), you can limit the query to only the first 10 rows.
+
+```{sql, connection = con, output.var = "band_albums_sql"}
+-- We're writing this code using the sql code chunk method. 
+-- This is because it allows you to see what's highlighted and what's not.
+-- SQL code is also inconvenient because you can't just add a new line,
+-- Instead, you need to tret all of these lines of code as a single statement
+-- Then add in the command where you think that it would fit.
+SELECT `artist_id`, `artist_name`, `num_albums` FROM (
+  SELECT `ArtistId`, `Name`, `num_albums`, `artist_name`, `ArtistId` AS `artist_id` FROM (
+    SELECT `ArtistId`, `Name`, `num_albums`, `Name` AS `artist_name` FROM (
+      SELECT `ArtistId`, `Name`, COUNT(*) AS `num_albums` FROM (
+        SELECT `AlbumId`, `ArtistId`, `Title`, `Name` FROM (
+          SELECT `AlbumId`, `Title`, `LHS`.`ArtistId` AS `ArtistId`, `Name` FROM `albums` AS `LHS`
+          INNER JOIN `artists` AS `RHS` ON (`LHS`.`ArtistId` = `RHS`.`ArtistId`)
+        )
+      )
+      GROUP BY `ArtistId`
+    )
+  )
+)
+WHERE (`num_albums` > 3.0)
+ORDER BY `num_albums` DESC 
+LIMIT 10;
+```
+```{r}
+# You can't see this, but output.var = "band_albums_sql" in the chunk above this.
+band_albums_sql
+```
+
+SQL is more versatile that `dbplyr`, but it's also a lot more confusing because it's not as straightforward. This creates one golden rule:
+
+> **Use dbplyr functions for data analysis and SQL code for accessing data**
+
+This is because SQL code is weird and hard to understand, but it allows you to easily pull in data. SQL is a coding language designed for you to query or ask databases for data. Meanwhile, `dbplyr` is meant for analyzing that data and modifying it.
+
+```{r, include = FALSE}
+dbDisconnect(con)
+file.remove("chinook.db")
+```
+
+Now, we worked with an SQLite database within this tutorial due to its simplicity. However, there are other databases that can be accessed in different ways. For example, a PostgresSQL server is located on the internet and allows you to pull data from the internet instead of downloading it into your computer. You can learn about some of the types of SQL databases and their differences [here](https://www.digitalocean.com/community/tutorials/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems).
 
 **Why should we bother with databases at all?**
 
-Opening a database stored in a `.db` file involved a lot more effort than just opening a `.csv`, `.tsv`, or any of the other plain text or Excel formats. It was a bit of a pain to use a database in that setting since we had to use `dbplyr` to translate `tidyverse`-like commands (`filter`, `select`, `head`, etc.) into SQL commands that the database understands. Not all `tidyverse` commands can currently be translated with SQLite databases. For example, we can compute a mean with an SQLite database but can't easily compute a median. So you might be wondering why should we use databases at all? 
+Opening a database stored in a `.db` file involved a lot more effort than just opening a `.csv`, `.tsv`, or any of the other plain text or Excel formats. It was a bit of a pain to use a database in that setting since we had to use `dbplyr` to translate `tidyverse`-like commands (`filter`, `select`, `head`, etc.) into SQL commands that the database understands. Not all `tidyverse` commands can currently be translated with SQLite databases, like we showed with `slice()`. So you might be wondering, why should we use databases at all? 
 
 Databases are beneficial in a large-scale setting:
 
@@ -543,6 +618,8 @@ Databases are beneficial in a large-scale setting:
 - they provide mechanisms for ensuring data integrity and validating input
 - they provide security to keep data safe
 For example, [there are billions of Google searches conducted daily](https://www.internetlivestats.com/google-search-statistics/). 
+
+This makes databases extremely useful for a business where you'll have employees doing thousands or millions of operations daily, and you need all of these features.
 
 ## Webscraping
 
