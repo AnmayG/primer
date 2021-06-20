@@ -619,7 +619,7 @@ Databases are beneficial in a large-scale setting:
 - they provide security to keep data safe
 For example, [there are billions of Google searches conducted daily](https://www.internetlivestats.com/google-search-statistics/). 
 
-This makes databases extremely useful for a business where you'll have employees doing thousands or millions of operations daily, and you need all of these features.
+This makes databases extremely useful for a business where they'll have employees doing thousands or millions of operations daily. This makes knowing what SQL databases are extremely vital from both a data science and a general usage perspective.
 
 ## Webscraping
 
