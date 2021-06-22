@@ -8,12 +8,6 @@
 
 <!-- TODO: -->
 
-<!-- Delete the PostgreSQL stuff. Learning how to connect to one database is enough. (Of course, in a sentence, you can mention other databases and what not.) -->
-
-<!-- AG: I'm going to be doing the following three parts when my pull request goes through because I'm going to be loading in a database through SQLite for these examples. It's in the pull request as a file called chinook.db in 03-data/data/chinook.db -->
-
-<!-- Add a subsection within databases that shows SQL code. -->
-
 <!-- Database section: Only reading from. Not setting up. Not writing to. Show how to connect. Discuss what connection is doing. Discuss (briefly) other databases. Show how to get general information, like list of tables and other stuff. Last section is SQL. What it is. Bunch of examples of using SQL on the database. -->
 
 <!-- Rewrite entire webscraping section. Delete everything you don't like. Look closely at the current version of the tutorial. Rewrite this section so that it will be easy to fold the tutorial questions into it at some point in the future. -->
@@ -34,7 +28,8 @@ library(knitr)
 ## Writing and reading files
 
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
-2   ### CSV files
+
+### CSV files
 
 "CSV" stands for **c**omma **s**eparated **v**alue. In other words, csv files are files whose values are separated by commas. Each comma from the csv file corresponds to a column, and the column names are, by default, taken from the first line of the file.
 
