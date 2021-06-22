@@ -34,17 +34,19 @@ library(knitr)
 ## Writing and reading files
 
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
-
-### CSV files
+2   ### CSV files
 
 "CSV" stands for **c**omma **s**eparated **v**alue. In other words, csv files are files whose values are separated by commas. Each comma from the csv file corresponds to a column, and the column names are, by default, taken from the first line of the file.
+
+CSV files (and their counterparts) are easily transferable between computers and programming languages and are extremely simple because they're effectively just text files that have a special format. Additionally, they're very easy to parse through small amounts of data due to th eir simple nature. 
+However, due to their simple nature, CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which can make the dataset harder to organize and understand by adding a new column for a few specific entries.
 
 #### Reading and writing from a CSV file
 
 Here's an example of a CSV file and what it looks like. Use `read_csv()` from the **readr** package --- which is one of the main packages within the **tidyverse** collection of packages --- to load the data into R. The `file` argument is the file path for the CSV file.
 
 ```{r}
-# We can access files either by using their URL or their file path. 
+# We can access files either by using their URL or their file path.
 # In this case, we're using the GitHub URL to access the database.
 file_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_1.csv"
 read_csv(file = file_1)
@@ -143,10 +145,10 @@ With `read_delim()`, we specify the first argument as the path to the file, as d
 
 delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/delim_1.txt"
 
-readLines(delim_1)
+read_delim(delim_1, delim = "|")
 ```
 
-Both CSV files and their text counterparts are easily transferable between computers and programming languages, but due to their simple nature CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which create a column and end up breaking the table in the end.
+You can often find CSV files on websites like [kaggle](https://kaggle.com) as well as by exporting from an Excel spreadsheet.
 
 ### Excel Files
 
