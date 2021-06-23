@@ -910,8 +910,6 @@ denver %>%
 
 ```
 
-<!-- AG: There's a great tutorial here: https://masalmon.eu/2017/11/16/wheretoliveus/ that shows how to create a graph and how to manipulate Mesonet API data. This may be more suited to a tutorial however. Also see the README.md here: https://github.com/eringrand/astropic on how to use NASA's APOD-->
-
 The `content()` call extracts the content from the response to the HTTP request sent by the `GET()` function. The Iowa Environmental Mesonet API offers the option to return the requested data in a comma-separated file (format = "comma" in the GET request), so here content and `read_csv()` are used to extract and read in that csv file. Usually, data will be returned in a JSON format instead.
 
 The only tricky part of this process is figuring out the available parameter names (e.g., station) and possible values for each (e.g., "DEN" for Denver). Currently, the details you can send in an HTTP request through Iowa Environmental Mesonet’s API include:
