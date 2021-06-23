@@ -33,8 +33,8 @@ Getting data into and out of R is a major part of any real world data science pr
 
 "CSV" stands for **c**omma **s**eparated **v**alue. In other words, csv files are files whose values are separated by commas. Each comma from the csv file corresponds to a column, and the column names are, by default, taken from the first line of the file.
 
-CSV files (and their counterparts) are easily transferable between computers and programming languages and are extremely simple because they're effectively just text files that have a special format. Additionally, they're very easy to parse through small amounts of data due to th eir simple nature. 
-However, due to their simple nature, CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which can make the dataset harder to organize and understand by adding a new column for a few specific entries.
+CSV files (and their counterparts) are easily transferable between computers and programming languages and are extremely simple because they're effectively just text files that have a special format. Additionally, they're very easy to parse through small amounts of data because they're easily readable by humans and computers. 
+However, due to their simple nature, CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which can make the dataset harder to organize and understand by adding a new column for a few specific entries. This make CSV files good for sharing data between computers and languages, but not efficient for transporting or saving large amounts of data.
 
 #### Reading and writing from a CSV file
 
@@ -86,9 +86,11 @@ file_2 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/
 readLines(file_2)
 ```
 
-As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail.
+As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail and output gibberish.
 
 ```{r}
+# You can also get a csv file by using the URL of the file.
+# This won't work for all file types though.
 file_2 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_2.csv"
 
 read_csv(file_2)
@@ -118,7 +120,77 @@ read_csv(file = file_2,
                           c = col_double()))
 ```
 
-When our tabular data comes in a different format, we can use the `read_delim()` function instead. For example, a different version of `test_2.csv` could exist that has no column names and uses pipes (`|`) as the delimiter instead of commas.
+You can also change the column arguments so that you get the data type that you want.
+Take `test_7.csv`.
+```{r}
+file_3 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_7.csv"
+read_csv(file_3)
+```
+
+Let's try parsing this so that the `student` column is a factor and the `grade` column is an integer.
+```{r}
+read_csv(file_3,
+         col_types = cols(grade = col_integer(),
+                          student = col_factor()))
+```
+By being clever with the columns, we can make our lives easier down the line when we graph the data.
+
+We can also manipulate other arguments for CSV files.
+
+Let's try changing the column names in the `test_3.csv` file.
+
+As you can see below, the file doesn't have any column names, resulting in the first row being considered as a column.
+
+```{r}
+file_4 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_3.csv"
+read_csv(file_4)
+```
+
+We can fix this by changing the `col_names` argument.
+```{r}
+read_csv(file_4, col_names = c("a", "b", "c"))
+```
+
+You can also create names automatically by setting `col_names` to FALSE
+```{r}
+read_csv(file_4, col_names = FALSE)
+```
+
+Changing the names of the columns allows for you to call on the columns later when the data is actually a tibble. Setting the column names to something that you can understand makes it much easier to understand your code later on.
+
+<!-- AG: The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. -->
+
+Another feature is the `na` argument.
+```{r}
+file_5 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_5.csv"
+read_csv(file_5)
+```
+
+`test_5.csv` is missing a value, and it uses a `.` as a substitute. This makes the computer think that the period is the actual value of the data point, which is obviously not true (we want numbers instead). By default, `read_csv()` treats white space like ` ` as a missing value, but you can set this argument directly as well.
+
+```{r}
+read_csv(file_5,
+         na = ".")
+```
+
+You can also tell the code to ignore comment lines, which may be common in a csv file that was written by a human and as such has comments in it. `test_6.csv` is a perfect example of this. Here's what it looks like:
+```{r, echo = FALSE}
+file_6 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_6.csv"
+readLines(file_6)
+```
+
+By setting the `comment` argument, we're able to skip lines that have a certain starting point.
+In this case, the comment is the `#` sign, so we just need to include that in.
+
+```{r}
+read_csv(file_6, comment = "#")
+```
+
+If you ever want to skip certain lines, just use the `comment` argument in order to designate it as something to be skipped. This is best used with cases where the `read_csv()` command will not compile without it.
+
+So far, we've covered how we can organize CSV data, but at it's core we're working with comma separated values. But what happens when we want to read data from something that doesn't use commas to separate the values?
+
+When our tabular data comes in a different format, we can use the `read_delim()` function instead. For example, a different version of `test_6.csv` could exist that has no column names and uses pipes (`|`) as the delimiter instead of commas.
 
 Here's another file named `delim_1`, which uses the `|` to separate the lines instead of a comma like a normal CSV file.
 
@@ -143,17 +215,17 @@ delim_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst
 read_delim(delim_1, delim = "|")
 ```
 
-You can often find CSV files on websites like [kaggle](https://kaggle.com) as well as by exporting from an Excel spreadsheet.
+You can often find CSV files on websites like [kaggle](https://kaggle.com) as well as by exporting from an Excel spreadsheet. Keep in mind that data imported off of the internet is often very messy, so try to use some of the functions listed here to clean it up. For a full list of arguments and in-depth documentation about the `read_csv()` function, please visit this [website](https://readr.tidyverse.org/reference/read_delim.html).
 
 ### Excel Files
 
 Excel is a spreadsheet program that use tables to analyze, store, or manipulate data. The tables are composed of cells which include text, numbers, or formulas. Excel files have the filename extension .xlsx. They store additional things that you cannot store in a .csv file such as fonts, text formatting, graphics, etc.
 
-In order to write excel files you have to install complex packages, and they are hard to create. Writing excel files is beyond the scope of Primer. 
+In order to write excel files you have to install complex packages, and they are hard to create. Writing excel files is beyond the scope of Primer.
+
+This makes Excel files valuable because they're commonly accepted and usable (Microsoft Excel is a very common program), but they're also hard to use because you can't write new data into them. This makes Excel files more common for data that was originally in Excel, like accounting data or other spreadsheet applications.
 
 Reading Excel files is easy. To do so, we use the `read_excel()` function from the **readxl** package.
-
-<!-- I tried to merge with the thign and got the weird stuff with the head and what looks like an API key for some reason. I'm hoping this isn't a bad thing. -->
 
 ```{r}
 library(readxl)
@@ -163,14 +235,10 @@ library(readxl)
 # directory. Note that the "proper" way of handling this would be to create a
 # temp directory with tempdir(), download the file into that directory, read it,
 # and then delete the temp directory. That way, you would not have random
-
 # downloaded files hanging around.
+
 # The mode = "wb" is a necessary addition for Windows users because Windows is
 # weird. It's not necessary on MacOS and may cause an error as well.
-
-# downloaded files hanging around. The mode = "wb" is a necessary addition for
-# Windows users because Windows is weird. It's not necessary on MacOS and may
-# cause an error as well.
 
 download.file(url = "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/excel_1.xlsx", 
               destfile = "example_excel.xlsx", mode = "wb")
@@ -190,14 +258,15 @@ file.remove("example_excel.xlsx")
 
 
 If the .xlsx file has multiple sheets, you have to use the `sheet` argument to specify the sheet number or name. 
+The `read_excel()` function has arguments similar to the `read_csv()` function such as `col_names`, `col_types`, and `na`.
 
+### RDS files
 
-### RDS
-
-One very important aspect of R is saving objects into rds files, which store a single R object into a file.
+One very important aspect of R is saving objects into  RDS  files, which store a single R object into a file.
 These files allow us to save R objects such as plots and tibbles into R and then reload the object that it contains later without re-running the code that made it.
 This is especially useful for when you're dealing with bulk data and want to save the plot that comes with it for later.
-With a rds file, you save the entire object, allowing you to do more things with it later without having to go through all of the code.
+With a RDS file, you save the entire object, allowing you to do more things with it later without having to go through all of the code.
+However, RDS files are limited to R projects only, and they're often incomprehensible both to human eyes and to other programming languages. This makes RDS files ideal for saving objects temporarily in your own project or for sharing objects to other R users.
 
 Take the following R object, a graph of the `iris` data set.
 
@@ -211,13 +280,13 @@ iris_p <- iris %>%
 iris_p
 ```
 
-When we save to a rds file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. The end of the path argument is the name that you want to use for the file.
+When we save to a RDS file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. The end of the path argument is the name that you want to use for the file.
 
 ```{r}
-# Technically, it's incorrect to save a ggplot plot as a rds file because it has
+# Technically, it's incorrect to save a ggplot plot as a RDS file because it has
 # no real benefit. It still just acts as a plot and restricts the user to only
 # using ggplot functions. It's more practical to save the data set itself.
-# We're using a graph here to better show how the rds file is unique from other
+# We're using a graph here to better show how the RDS file is unique from other
 # data formats like CSV files.
 
 write_rds(x = iris_p, file = "iris_p.rds")
@@ -239,17 +308,19 @@ rds_p +
               se = FALSE)
 ```
 
-By saving the `iris_p` plot in a rds file, we eliminate the time needed to calculate and generate that plot again because we can use the saved information. We can then use the object by reading the file back into r and using it like any normal plot, adding new layers and doing new operations.
+By saving the `iris_p` plot in a RDS file, we eliminate the time needed to calculate and generate that plot again because we can use the saved information. We can then use the object by reading the file back into r and using it like any normal plot, adding new layers and doing new operations.
 
 ```{r, include = FALSE}
 file.remove("iris_p.rds")
 ```
 
-There are also Rdata files which can store multiple objects.
+There are also .Rdata files which can store multiple objects, but RDS files can accomplish a similar task. This makes it much easier to use RDS files for anything that you want to keep in R.
 
 ### JSON
 
 An increasingly common format for sharing data is **J**avaScript **O**bject **N**otation or JSON. Because this format is very general, it is nothing like a spreadsheet. Note that JSON files are often made available via the internet. Several organizations provide a JSON API or a web service that you can connect directly to and from which you can obtain data. 
+
+JSON files are a minimal readable format that structures data, and they're commonly used to transmit data between a server and a web application like a website. For people familiar with the Javascript coding language, you'll likely see the similarities between the JSON file format and the Javascript syntax. This makes JSON files ideal for internet transport, but they don't see much use within a project like RDS files do.
 
 The functions `fromJSON()` and `toJSON()` allow you to convert between R objects and JSON. Both functions come from the **jsonlite** package. 
 
@@ -257,7 +328,7 @@ The functions `fromJSON()` and `toJSON()` allow you to convert between R objects
 library(jsonlite)
 ```
 
-The function `toJSON()` converts a tibble to JSON format. Consider the `example_1`:
+The function `toJSON()` converts a tibble to JSON format. Consider the `example_1` tibble:
 
 ```{r}
 example_1 <- tibble(name= c("Miguel", "Sofia", "Aya", "Cheng"), 
@@ -266,8 +337,6 @@ example_1 <- tibble(name= c("Miguel", "Sofia", "Aya", "Cheng"),
 
 example_1
 ```
-
-
 
 ```{r}
 # The pretty argument adds indentation and whitespace when TRUE.
@@ -278,7 +347,6 @@ toJSON(example_1, pretty = TRUE)
 The function `fromJSON()` converts JSON format to a tibble.
 
 ```{r}
-
 json_format_ex <-
 '[
   {"Name" : "Mario", "Age" : 32, "Occupation" : "Plumber"}, 
@@ -290,7 +358,11 @@ json_format_ex <-
 fromJSON(json_format_ex) 
 ```
 
+Make sure to follow the JSON format exactly when you're writing JSON files, as the format is what makes them special and what allows them to work.
+
 ## Databases
+
+Databases are one of the most common methods of storing data, as they are capable of storing large amounts of data while also allowing for multiple people to access and change them at the same time. Think of these like a giant book with a bunch of tables that hold data. These are useful by themselves, but with the advent of computers we are now able to use relational databases.
 
 A relational database is a database that has the tables interact with one another based on common data, allowing you to create custom tables from an existing set of records. For example, a relational database may hold multiple tables that use the same ID to keep track of different information, like one table having an ID and a movie name while another has the ID and the rating. You can then combine those two in your code, creating a table with the ID, name, and rating. This allows the person who made the database to easily put in new data as well as allow you to pull out some data at a time without loading the entire database.
 
@@ -446,7 +518,7 @@ However, there are cases where you will have to use SQL code to accomplish certa
 #### Using SQL code
 <!-- AG: I'm devoting a paragraph to SQL and what it is. I'm doing this because I don't want people to misunderstand that you can just use dbplyr for everything, as well as that dbplyr is actually doing the SQL code for you. -->
 
-<!-- AG: The caption seemed to knit ok, but I'm not sure if I should use it. -->
+<!-- AG: The caption seemed to knit ok, but I'm not sure if I should use it in the actual book. -->
 
 ```{r, echo = FALSE, fig.cap="DROP TABLE is a particularly infamous SQL command."}
 knitr::include_graphics("https://imgs.xkcd.com/comics/exploits_of_a_mom.png")
@@ -507,22 +579,23 @@ This is possible in an SQL database. There are a couple of ways to run SQL code 
 # It's also organized for readability, with the parentheses having their own lines.
 # This isn't how SQL code is formatted normally, but it's intended for readability.
 # This is probably more understandable for people who have Java or Python experience
+
 dbGetQuery(con, "
-SELECT `artist_id`, `artist_name`, `num_albums` FROM (
-  SELECT `ArtistId`, `Name`, `num_albums`, `artist_name`, `ArtistId` AS `artist_id` FROM (
-    SELECT `ArtistId`, `Name`, `num_albums`, `Name` AS `artist_name` FROM (
-      SELECT `ArtistId`, `Name`, COUNT(*) AS `num_albums` FROM (
-        SELECT `AlbumId`, `ArtistId`, `Title`, `Name` FROM (
-          SELECT `AlbumId`, `Title`, `LHS`.`ArtistId` AS `ArtistId`, `Name` FROM `albums` AS `LHS`
-          INNER JOIN `artists` AS `RHS` ON (`LHS`.`ArtistId` = `RHS`.`ArtistId`)
+  SELECT `artist_id`, `artist_name`, `num_albums` FROM (
+    SELECT `ArtistId`, `Name`, `num_albums`, `artist_name`, `ArtistId` AS `artist_id` FROM (
+      SELECT `ArtistId`, `Name`, `num_albums`, `Name` AS `artist_name` FROM (
+        SELECT `ArtistId`, `Name`, COUNT(*) AS `num_albums` FROM (
+          SELECT `AlbumId`, `ArtistId`, `Title`, `Name` FROM (
+            SELECT `AlbumId`, `Title`, `LHS`.`ArtistId` AS `ArtistId`, `Name` FROM `albums` AS `LHS`
+            INNER JOIN `artists` AS `RHS` ON (`LHS`.`ArtistId` = `RHS`.`ArtistId`)
+          )
         )
+        GROUP BY `ArtistId`
       )
-      GROUP BY `ArtistId`
     )
   )
-)
-WHERE (`num_albums` > 3.0)
-ORDER BY `num_albums` DESC
+  WHERE (`num_albums` > 3.0)
+  ORDER BY `num_albums` DESC
 ")
 ```
 
@@ -558,7 +631,7 @@ SELECT * FROM albums;
 
 You can then use that variable in your R code.
 ```{r}
-your_variable_name
+head(your_variable_name)
 ```
 
 Coding in SQL allows you to do the things that the **dbplyr** package doesn't, such as only using certain rows. If you add `LIMIT 10;` at the end of the query (the first `SELECT` statement), you can limit the query to only the first 10 rows.
@@ -567,7 +640,7 @@ Coding in SQL allows you to do the things that the **dbplyr** package doesn't, s
 -- We're writing this code using the sql code chunk method. 
 -- This is because it allows you to see what's highlighted and what's not.
 -- SQL code is also inconvenient because you can't just add a new line,
--- Instead, you need to tret all of these lines of code as a single statement
+-- Instead, you need to treat all of these lines of code as a single statement
 -- Then add in the command where you think that it would fit.
 SELECT `artist_id`, `artist_name`, `num_albums` FROM (
   SELECT `ArtistId`, `Name`, `num_albums`, `artist_name`, `ArtistId` AS `artist_id` FROM (
@@ -588,10 +661,11 @@ LIMIT 10;
 ```
 ```{r}
 # You can't see this, but output.var = "band_albums_sql" in the chunk above this.
+# So we're outputting our data into band_albums_sql
 band_albums_sql
 ```
 
-SQL is more versatile that `dbplyr`, but it's also a lot more confusing because it's not as straightforward. This creates one golden rule:
+SQL is more versatile than `dbplyr`, but it's also a lot more confusing because it's not as straightforward. This creates one golden rule:
 
 > **Use dbplyr functions for data analysis and SQL code for accessing data**
 
@@ -649,8 +723,6 @@ Hello World
 </p>
 </html>
 <br>
-
-When we're using HTML in R, we use the `minimal_html()` function to allow us to easily use it.
 
 #### Application
 Now let's look at this in a real-world context. Say we are interested in knowing the average rental price (per square footage) of the most recently available one-bedroom apartments in Vancouver from https://vancouver.craigslist.org. When we visit the Vancouver Craigslist website and search for one-bedroom apartments, this is what we are shown:
