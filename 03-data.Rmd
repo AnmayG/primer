@@ -8,8 +8,6 @@
 
 <!-- TODO: -->
 
-<!-- Database section: Only reading from. Not setting up. Not writing to. Show how to connect. Discuss what connection is doing. Discuss (briefly) other databases. Show how to get general information, like list of tables and other stuff. Last section is SQL. What it is. Bunch of examples of using SQL on the database. -->
-
 <!-- Rewrite entire webscraping section. Delete everything you don't like. Look closely at the current version of the tutorial. Rewrite this section so that it will be easy to fold the tutorial questions into it at some point in the future. -->
 
 Start by loading the packages which we will need in this chapter.
@@ -22,7 +20,6 @@ library(lubridate)
 library(dbplyr)
 library(janitor)
 library(skimr)
-library(knitr)
 ```
 
 ## Writing and reading files
@@ -43,6 +40,7 @@ Here's an example of a CSV file and what it looks like. Use `read_csv()` from th
 ```{r}
 # We can access files either by using their URL or their file path.
 # In this case, we're using the GitHub URL to access the database.
+
 file_1 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_1.csv"
 read_csv(file = file_1)
 ```
@@ -81,6 +79,7 @@ Consider the following csv file: `test_2.csv`. Here's what it looks like as a te
 # This is so it doesn't confuse the readers
 # And it lines up with the introduction that I used without looking weird
 # We set `file_1` to be the full path to `test_2.csv`'s location on the web.
+
 file_2 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_2.csv"
   
 readLines(file_2)
@@ -91,6 +90,7 @@ As you can see, there is text at the top of this file. Often times information a
 ```{r}
 # You can also get a csv file by using the URL of the file.
 # This won't work for all file types though.
+
 file_2 <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_2.csv"
 
 read_csv(file_2)
@@ -217,7 +217,7 @@ read_delim(delim_1, delim = "|")
 
 You can often find CSV files on websites like [kaggle](https://kaggle.com) as well as by exporting from an Excel spreadsheet. Keep in mind that data imported off of the internet is often very messy, so try to use some of the functions listed here to clean it up. For a full list of arguments and in-depth documentation about the `read_csv()` function, please visit this [website](https://readr.tidyverse.org/reference/read_delim.html).
 
-### Excel Files
+### Excel files
 
 Excel is a spreadsheet program that use tables to analyze, store, or manipulate data. The tables are composed of cells which include text, numbers, or formulas. Excel files have the filename extension .xlsx. They store additional things that you cannot store in a .csv file such as fonts, text formatting, graphics, etc.
 
@@ -283,12 +283,6 @@ iris_p
 When we save to a RDS file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. The end of the path argument is the name that you want to use for the file.
 
 ```{r}
-# Technically, it's incorrect to save a ggplot plot as a RDS file because it has
-# no real benefit. It still just acts as a plot and restricts the user to only
-# using ggplot functions. It's more practical to save the data set itself.
-# We're using a graph here to better show how the RDS file is unique from other
-# data formats like CSV files.
-
 write_rds(x = iris_p, file = "iris_p.rds")
 ```
 
@@ -449,7 +443,7 @@ Additionally, some operations will not work to extract columns or single values 
 
 > Warning: Usually, databases are very big! Reading the object into your local machine may give an error or take a lot of time to run so be careful if you plan to do this! 
 
-###Interacting with SQLite databases
+### Interacting with SQLite databases
 
 Now that we've figured out how to get data from a database, let's look at how to wrangle data within that database.
 
@@ -460,7 +454,9 @@ So let's try pulling in a database and see how we can manipulate it.
 ```{r}
 library(DBI)
 library(RSQLite)
+
 # Again, use mode = "wb" if you're using a Windows operating system.
+
 download.file(url = "https://github.com/PPBDS/primer/blob/master/03-data/data/chinook.db?raw=true",
              dest = "chinook.db", mode = "wb")
 
@@ -498,6 +494,7 @@ Here's an example of using the **dbpylr** package to get the number of albums ea
 ```{r} 
 # You can keep a column during the summarize() if you just put the name equal to itself.
 # This code is deliberately long in order to show the common functions that we use.
+
 band_albums <- tbl(con, "albums") %>%
                  inner_join(tbl(con, "artists"), by = "ArtistId") %>%
                  select("AlbumId", "ArtistId", "Title", "Name") %>%
@@ -537,6 +534,7 @@ SQL runs through something known as a **query**, a line of code that pulls in in
 ```{sql, connection = con}
 -- This code is written in SQL syntax, so it won't work if you just put it into R. 
 -- We'll be going over how to write SQL in R later in this section.
+
 SELECT AlbumId, Title, ArtistId FROM albums
 ```
 
@@ -544,6 +542,7 @@ You can then modify these queries to do operations like joins.
 ```{sql, connection = con}
 -- This does the same thing as the inner join from Chapter 2 Wrangling
 -- Here we're joining the albums and the artists table by the ArtistId column
+
 SELECT ArtistId, Name, Title FROM (
   SELECT Title, albums.ArtistId AS "ArtistId", "Name"
   FROM albums
