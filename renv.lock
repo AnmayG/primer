@@ -1484,26 +1484,12 @@
       "Repository": "CRAN",
       "Hash": "f4d706b25d640dbaeb56d9c9b6ce9a22"
     },
-    "svglite": {
-      "Package": "svglite",
-      "Version": "2.0.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "8fb6188960bf0f90996ce52f9c2106ac"
-    },
     "sys": {
       "Package": "sys",
       "Version": "3.4",
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
-    },
-    "systemfonts": {
-      "Package": "systemfonts",
-      "Version": "1.0.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f2e17ba09737e2e7e2ec40fc1f9b6e08"
     },
     "terrainmeshr": {
       "Package": "terrainmeshr",
