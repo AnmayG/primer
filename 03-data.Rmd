@@ -52,10 +52,10 @@ However, due to their simple nature, CSV files are only able to move basic data 
 Here's an example of a CSV file and what it looks like. Use `read_csv()` from the **readr** package --- which is one of the main packages within the **tidyverse** collection of packages --- to load the data into R. The `file` argument is the file path for the CSV file.
 
 ```{r}
-# We can access files either by using their URL or their file path.
-# In this case, we're using the GitHub URL to access the database.
-# This is done by pasting the file name into our URL using the paste0() command
-# This does the same thing as creating the URL below.
+# We can access files either by using their URL or their file path. In this
+# case, we're using the GitHub URL to access the database. This is done by
+# pasting the file name into our URL using the paste0() command This does the
+# same thing as creating the URL below.
 # https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/test_1.csv
 
 file_1 <- paste0(github_url, "test_1.csv")
@@ -228,12 +228,10 @@ readLines(delim_1, warn = FALSE)
 With `read_delim()`, we specify the first argument as the path to the file, as done with `read_csv()`. Then we provide values to the `delim` argument to have the code use `|` as the separator instead of the comma.
 
 ```{r}
-# Because delim_1 uses pipes to separate values, 
-# we can just use that as our delim value.
-# However, for more complex symbols like tab, 
-# we use something different like "\\t"
-# This varies for every symbol, but you can 
-# find most delim values on the internet.
+# Because delim_1 uses pipes to separate values, we can just use that as our
+# delim value. However, for more complex symbols like tab, we use something
+# different like "\\t" This varies for every symbol, but you can find most delim
+# values on the internet.
 
 delim_1 <- paste0(github_url, "delim_1.txt")
 
@@ -523,8 +521,9 @@ The **dbpylr** package allows you to use many of the same functions from the **t
 Here's an example of using the **dbpylr** package to get the number of albums each artist has created.
 
 ```{r} 
-# You can keep a column during the summarize() if you just put the name equal to itself.
-# This code is deliberately long in order to show the common functions that we use.
+# You can keep a column during the summarize() if you just put the name equal to
+# itself. This code is deliberately long in order to show the common functions
+# that we use.
 
 band_albums <- tbl(con, "albums") %>%
                  inner_join(tbl(con, "artists"), by = "ArtistId") %>%
