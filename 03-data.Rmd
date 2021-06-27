@@ -8,11 +8,11 @@
 
 <!-- TODO: -->
 
-<!-- Rewrite entire webscraping section. Delete everything you don't like. Look closely at the current version of the tutorial. Rewrite this section so that it will be easy to fold the tutorial questions into it at some point in the future. -->
+<!-- Rewrite entire webscraping section. Delete everything you don't like. Look closely at the current version of the tutorial. Rewrite this section so that it will be easy to fold the tutorial questions into it at some point in the future. DONE -->
 
 <!-- Start of chapter, mention that all the files we are working on live in this directory, called `file_dir <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/"`. Then, define `file_1 <- paste0(file_dir, "test_1.csv")` or whatever. DONE -->
 
-<!-- The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. True! So, what do we include and what do we not? I I don't know, I don't really have any feelings either way. It makes sense to have it in the book though since people will likely refer to the book rather than the documentation when they have problems. -->
+<!-- The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. True! So, what do we include and what do we not? I I don't know, I don't really have any feelings either way. It makes sense to have it in the book though since people will likely refer to the book rather than the documentation when they have problems. DONE -->
 
 Start by loading the packages which we will need in this chapter.
 
@@ -1048,7 +1048,7 @@ CSS classes are a way for multiple elements to have the same style, rather than 
 <p> This is not red :( </p>
 </html>
 
-We can do the same thing with classes that we did with IDs, using `html_elements()` to sort through them. You use a `.` instead of a `#` to show that it's a class. In order to sort by multiple classes, just combine the statements together.
+We can do the same thing with classes that we did with IDs, using `html_elements()` to sort through them. You use a `.` instead of a `#` to show that it's a class. In order to sort by multiple classes, just combine the statements together. If you want to get all of the elements from multiple classes, use a comma to separate them.
 
 ```{r}
 raw_html_4 <- paste0("<html>",
@@ -1069,6 +1069,11 @@ raw_html_4 %>%
 raw_html_4 %>%
   minimal_html() %>%
   html_elements(".red-class.green-bg") %>%
+  html_text2()
+
+raw_html_4 %>%
+  minimal_html() %>%
+  html_elements(".red-class, .green-bg") %>%
   html_text2()
 ```
 
@@ -1136,17 +1141,17 @@ raw_html_5 %>%
 
 This accesses the `href` attribute of the element without accessing the link, allowing you to find the links to outside websites.
 
-These chains are known as **CSS Selectors** and they're an important part of data science because they allow us to find data and information without having to download every file or copying everything down. Instead, we can just use the website's inbuilt code to get the information.
+These chains are known as **CSS Selectors** and they're an important part of data science because they allow us to find data and information on a website without having to download every file or copying everything down. Instead, we can just use the website's inbuilt code to get the information.
 
 ### Application
 
-Now let's look at this in a real-world context. Say we are interested in knowing the average rental price (per square footage) of the most recently available one-bedroom apartments in Vancouver from https://vancouver.craigslist.org. When we visit the Vancouver Craigslist website and search for one-bedroom apartments, this is what we are shown:
+Now let's look at this in a real-world context. Say we are interested in knowing the average rental price (per square footage) of the most recently available one-bedroom apartments in Vancouver according to [this](https://vancouver.craigslist.org). When we visit the Vancouver Craigslist website and search for one-bedroom apartments, this is what we are shown:
 
 ```{r, echo = FALSE}
 knitr::include_graphics("03-data/images/craigslist_human.png")
 ```
 
-From that page, it's pretty easy for our human eyes to find the apartment price and square footage. But how can we do this programmatically, so we don't have to copy and paste all these numbers? Well, we have to deal with the webpage source code, which we show a snippet of below (and link to the [entire source code here](03-data/images/html-code.png)):
+From that page, it's pretty easy for us to find the apartment price and square footage (Craigslist would be utterly incomprehensible otherwise). But the computer can't deal with that because human eyes and computer eyes are very different. It can't understand anything on the screen. So instead of looking at the screen, we can just parse through the HTML and find the correct information. Here's part of the HTML code for [Vancouver's Craigslist](https://vancouver.craigslist.org/search/apa?min_bedrooms=1&max_bedrooms=1&availabilityMode=0&sale_data=all+dates):
 
 ```
         <span class="result-meta">
@@ -1194,75 +1199,108 @@ From that page, it's pretty easy for our human eyes to find the apartment price 
 
 ```
 
-This is not easy for our human eyeballs to read! However, it is easy for us to use programmatic tools to extract the data we need by specifying which HTML tags (things inside `<` and `>` in the code above). For example, if we look in the code above and search for lines with a price, we can also look at the tags that are near that price and see if there's a common "word" we can use that is near the price but doesn't exist on other lines that have the information we are not interested in:
+This genuinely sucks to read. There's links, random numbers, and elements that have 4 classes on them at the same time, all while being stupidly long to the point where your eyes fall out. While we can pick out the CSS selectors that we need, ("result-price" and "housing"), this is a hassle and a pain and there's a better solution.
 
-```
-<span class="result-price">$800</span>
-```
-
-and 
-
-```
-<span class="result-price">$2285</span>
-```
-
-What we can see is there is a special "word" here, "result-price", which appears only on the lines with prices and not on the other lines (that have information we are not interested in). This special word and the context in which is is used (learned from the other words inside the HTML tag) can be combined to create something called a **CSS selector**. The CSS selector can then be used by R's rvest package to select the information we want (here price) from the website source code.
-
-Many websites are quite large and complex, which means the website source code is large as well. And as you saw above, it is not easy to read and pick out the special words we want with our human eyeballs. So to make this easier, we will use the *SelectorGadget* tool. It is an open source tool that simplifies generating and finding CSS selectors. We recommend you use the Chrome web browser to use this tool, and install the [selector gadget tool from the Chrome Web Store](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb). Here is a short video on how to install and use the SelectorGadget tool to get a CSS selector for use in web scraping:
+We will be using the *SelectorGadget* tool in order to find CSS selectors. It's an open source tool that simplifies generating and finding CSS selectors. We recommend that you use the Chrome web browser to use this tool, and install the [selector gadget tool from the Chrome Web Store](https://chrome.google.com/webstore/detail/selectorgadget/mhjhnkcfbdhnjickkkdbjoemdmbfginb). Here is a short video on how to install and use the SelectorGadget tool to get a CSS selector for use in web scraping:
 
 <iframe width="840" height="473" src="https://www.youtube.com/embed/YdIWI6K64zo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-From installing and using the selectorgadget as shown in the video above, we get the two CSS selectors `.housing` and `.result-price` that we can use to scrape information about the square footage and the rental price, respectively. The selector gadget returns them to us as a comma separated list (here `.housing , .result-price`), which is exactly the format we need to provide to R if we are using more than one CSS selector.
+From installing and using the selectorgadget as shown in the video above, we get the two CSS selectors `.housing` and `.result-price` that we can use to scrape information about the square footage and the rental price, respectively. The selector gadget returns them to us as a comma separated list (here `.housing , .result-price`), which is exactly the format we need to provide to R.
 
-### Are you allowed to scrape that website?
+However, when we're scraping from actual websites we need to take more than just the size of the code into consideration. We also need to take the legal aspects into account,
 
-**BEFORE** scraping data from the web, you should always check whether or not you are **ALLOWED** to scrape it! There are two documents that are important for this: the robots.txt file and reading the website's Terms of Service document. The website's Terms of Service document is probably the more important of the two, and so you should look there first. What happens when we look at Craigslist's Terms of Service document? Well we read this:
+#### Are you allowed to scrape that website?
+
+**BEFORE** scraping data from the web, you should always check whether or not you are **ALLOWED** to scrape it! There are two documents that are important for this: the robots.txt file (found by adding `/robots.txt` to the end of a URL like [so](https://www.craigslist.org/robots.txt)) and reading the website's Terms of Service document. The website's Terms of Service document is far and away the more important of the two because it's actually legally binding, so you should look there first. What happens when we look at Craigslist's Terms of Service document? Well we read this:
 
 *"You agree not to copy/collect CL content via robots, spiders, scripts, scrapers, crawlers, or any automated or manual equivalent (e.g., by hand)."*
 
 source: https://www.craigslist.org/about/terms.of.use
 
-
 > Want to learn more about the legalities of web scraping and crawling? Read this interesting blog post titled ["Web Scraping and Crawling Are Perfectly Legal, Right?" by Benoit Bernard](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/) (this is optional, not required reading).
 
-So what to do now? Well, we shouldn't scrape Craigslist! Let's instead scrape some data on the population of Canadian cities from Wikipedia (who's [Terms of Service document](https://foundation.wikimedia.org/wiki/Terms_of_Use/en) does not explicitlty say do not scrape). In this video below we demonstrate using the selectorgadget tool to get CSS Selectors from [Wikipedia's Canada](https://en.wikipedia.org/wiki/Canada) page to scrape a table that contains city names and their populations from the 2016 Canadian Census: 
+<!-- AG: I'm kind of conflicted here because there's a perfectly good video that shows exactly how we can use SelectorGadget on Wikipedia pages, but it doesn't line up with the tutorials. For now, I'm going to comment out the video for future reference and just follow along with the tutorial. -->
 
-<iframe width="840" height="473" src="https://www.youtube.com/embed/O9HKbdhqYzk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+So what to do now? Well, we can't scrape Craigslist, so we should find something else that allows you to scrape. Let's use a database from [Open Secrets about foreign-connected PACs within our country](https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2020).
 
+<!-- <iframe width="840" height="473" src="https://www.youtube.com/embed/O9HKbdhqYzk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
 
-### Using `rvest`
+#### Scraping from actual websites
 
-Now that we have our CSS selectors we can use the **rvest** R package to scrape our desired data from the website. First we start by loading the **rvest** package:
+<!-- AG: This counts as noncommercial use right? OpenSecrets says it's open to noncommercial use, but we have to request permission for commercial use. -->
 
-```{r, message = FALSE}
-library(rvest)
-```
-
-Next, we tell R what page we want to scrape by providing the webpage's URL in quotations to the function `read_html`:
+Now, earlier we only scraped from pre-written HTML code, but you can do this from websites as well. We can do this just by plugging in the URL to the website and using `read_html()` instead of `minimal_html()`.
 
 ```{r}
-page <- read_html("https://en.wikipedia.org/wiki/Canada")
+web_url <- "https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2020"
+
+web_url %>%
+  read_html()
 ```
 
-Then we send the page object to the `html_nodes()` function. We also provide that function with the CSS selectors we obtained from the selectorgadget tool. These should be surrounded by quotations. The `html_nodes` function select nodes from the HTML document using CSS selectors. Nodes are the HTML tag pairs as well as the content between the tags. For our CSS selector `td:nth-child(5)` and example node that would be selected would be: `<td style="text-align:left;background:#f0f0f0;"><a href="/wiki/London,_Ontario" title="London, Ontario">London</a></td>`
-
-We will use `head()` here to limit the print output of these vectors to 6 lines.
+In this case, we can use Selector Gadget to find the correct CSS selector "table.DataTable-Partial". We then just proceed as normal, but we need to use `html_table()` because we're trying to bring in a table and use it as a tibble.
 
 ```{r}
-population_nodes <- html_nodes(page, "td:nth-child(5) , td:nth-child(7) , .infobox:nth-child(122) td:nth-child(1) , .infobox td:nth-child(3)")
-
-head(population_nodes)
+web_url %>%
+  read_html() %>%
+  html_element("table.DataTable-Partial") %>%
+  html_table()
 ```
 
-Next we extract the meaningful data from the HTML nodes using the `html_text()` function. For our example, this functions only required argument is the an html_nodes object, which we named `rent_nodes`. In the case of this example node: `<td style="text-align:left;background:#f0f0f0;"><a href="/wiki/London,_Ontario" title="London, Ontario">London</a></td>`, the `html_text` function would return `London`.
+This allows us to scrape tibbles from websites. We can then use those tibbles to create new graphs.
+
+Let's try this by using a Wikipedia page about [gun violence in the United States](https://en.wikipedia.org/wiki/Gun_violence_in_the_United_States_by_state).
+
+First, we need to save the URL and read the HTML code from it into R.
 
 ```{r}
-population_text <- html_text(population_nodes)
+wiki_url <- "https://en.wikipedia.org/w/index.php?title=%22,%22Gun_violence_in_the_United_States_by_state%22,%22&direction=prev&oldid=810166167"
 
-head(population_text)
+wiki_url %>%
+  read_html()
 ```
 
-Are we done? Not quite... If you look at the data closely you see that the data is not in an optimal format for data analysis. Both the city names and population are encoded as characters in a single vector instead of being in a data frame with one character column for city and one numeric column for population (think of how you would organize the data in a spreadsheet). Additionally, the populations contain commas (not useful for programmatically dealing with numbers), and some even contain a line break character at the end (`\n`).
+We can then use SelectorGadget to find the correct CSS selector. If you can't easily click on the table, you can also find a selector by reading the HTML code itself. You can do this by highlighting the table, right clicking, and pressing "Inspect". While you'll have to dig through the HTML in order to find the correct selector, this is a perfectly viable way to find selectors.
+
+We can then save the table provided into a variable known as `raw_data_wiki`.
+
+```{r}
+raw_data_wiki <- wiki_url %>%
+                   read_html() %>%
+                   html_element("table.wikitable.sortable") %>%
+                   html_table()
+raw_data_wiki
+```
+
+Past this point, you can work with the data just like you would normal data. Here's an example graph of how states that have a denser population experience more consistent gun deaths than states with a less dense population.
+
+```{r}
+clean_data <- raw_data_wiki %>%
+                rename("population" = "Population (total inhabitants) (2015) [1]",
+                       "death_rate" = "Murder and Nonnegligent\nManslaughter Rate(per 100,000 inhabitants) (2015)",
+                       "total_deaths" = "Murders and Nonnegligent\nManslaughter(total deaths) (2015) [2]") %>%
+                        select(population, death_rate) %>%
+                        mutate(population = parse_number(population)) %>%
+                        mutate(pop_tile = ntile(population, 20)) %>%
+                        group_by(pop_tile) %>%
+                        summarize(num_states = n(), sum_rate = sum(death_rate)) %>%
+                        mutate(avg_rate = sum_rate/num_states) %>%
+                        mutate(percent_rate = avg_rate / sum(avg_rate))
+
+ggplot(clean_data, aes(x = pop_tile, y = percent_rate)) + 
+  geom_col() +
+  geom_smooth(method = "loess", formula = "y ~ x", se = FALSE) +
+  scale_x_continuous(breaks = 1:20) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_classic() +
+  labs(title = "Distribution of US Death Rate by Guns in Quantile of Population in 2015",
+       subtitle = "Death rate of less populated states fluctuate more than states with a denser population",
+       x = "Quantile by Population (least to most)",
+       y = "Percent of Average Death Rate",
+       caption = "Wikipedia: Gun Violence in the United States (2017)")
+```
+
+Webscraping is a powerful tool to gain data directly from the internet, but make sure that you're following the proper protocols so that you don't break the law and actually get the information that you need.
 
 ## Working with APIs
 
