@@ -160,7 +160,7 @@ We can also manipulate other arguments for CSV files.
 
 Let's try changing the column names in the `test_3.csv` file.
 
-As you can see below, the file doesn't have any column names, resulting in the first row being considered as a column.
+As you can see below, the file doesn't have any column names, resulting in the first row being considered as the names for the rest of the file.
 
 ```{r}
 file_4 <- paste0(github_url, "test_3.csv")
@@ -189,7 +189,7 @@ file_5 <- paste0(github_url, "test_5.csv")
 read_csv(file_5)
 ```
 
-`test_5.csv` is missing a value, and it uses a `.` as a substitute. This makes the computer think that the period is the actual value of the data point, which is obviously not true (we want numbers instead). By default, `read_csv()` treats white space like ` ` as a missing value, but you can set this argument directly as well.
+`test_5.csv` is missing a value, and it uses a `.` as a substitute. This makes the computer think that the period is the actual value of the data point, which is obviously not true (we want numbers instead). By default, `read_csv()` treats white space like spaces or tabs as a missing value, but you can set this argument directly as well.
 
 ```{r}
 read_csv(file_5,
@@ -601,7 +601,8 @@ This is possible in an SQL database. There are a couple of ways to run SQL code 
 <!-- AG: This is my first time doing SQL code and I'm more experienced with Java/Python, so I formatted it like how Java and Python are formatted with the parentheses acting as brackets instead. This may be heresy in the SQL world, so please tell me if I have to fix it. I did some research and found an online SQL formatter here: https://sqlformat.org/ I'm just going to use this syntax because there are a lot of conflicting things and this is the one .org website I found.-->
 
 ```{r}
-# This code is just copy-pasted from the earlier dbplyr code so you can best understand it.
+# This code is just copy-pasted and reformatted from the earlier dbplyr code so 
+# you can best understand it.
 
 dbGetQuery(con, "
 SELECT `artist_id`,
@@ -728,7 +729,7 @@ SQL is more versatile than `dbplyr`, but it's also a lot more confusing because 
 
 > **Use dbplyr functions for data analysis and SQL code for accessing data**
 
-This is because SQL code is weird and hard to understand, but it allows you to easily pull in data. SQL is a coding language designed for you to query or ask databases for data. Meanwhile, `dbplyr` is meant for analyzing that data and modifying it.
+This is because SQL code is weird and hard to understand, but it allows you to easily pull in data. SQL is a coding language *designed* for you to query or ask databases for data. Meanwhile, `dbplyr` is meant for analyzing that data and modifying it.
 
 ```{r, include = FALSE}
 dbDisconnect(con)
@@ -1273,6 +1274,8 @@ raw_data_wiki
 ```
 
 Past this point, you can work with the data just like you would normal data. Here's an example graph of how states that have a denser population experience more consistent gun deaths than states with a less dense population.
+
+<!-- AG: I'm just providing the straight-up graph in this case so that the rest of the tutorial can just be copy-pasted into here. There's a lot of graph building exercises in the tutorial that honestly doesn't really fit in this chapter of the book, which is all about data. -->
 
 ```{r}
 clean_data <- raw_data_wiki %>%
