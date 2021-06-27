@@ -719,6 +719,7 @@ WHERE (`num_albums` > 3.0)
   ORDER  BY `num_albums` DESC
 LIMIT 10;
 ```
+
 ```{r}
 # You can't see this, but output.var = "band_albums_sql" in the chunk above this.
 # So we're outputting our data into band_albums_sql
