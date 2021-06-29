@@ -8,19 +8,18 @@
 
 <!-- Add skimr() and skim() to chapter 2. Simple one time use on a tibble. Explain what it does. At end of chapter before Summary. DONE -->
 
-<!-- Use janitor::clean_names() in chapter 3. Simple example with a file with variable names like `my var` and `1-var`.  Read this in without fixing. Show how to use backticks to refer to those variables. Point out that this is annoying. Fix with clean_names(). -->
+<!-- Use janitor::clean_names() in chapter 3. Simple example with a file with variable names like `my var` and `1-var`.  Read this in without fixing. Show how to use backticks to refer to those variables. Point out that this is annoying. Fix with clean_names(). DONE -->
 
-<!-- Change all the files used so that they always have one blank line at the bottom to make that warning go away. Get rid of "warn" argument.  -->
+<!-- Change all the files used so that they always have one blank line at the bottom to make that warning go away. Get rid of "warn" argument. DONE -->
 
 <!-- * Deal with this message we get when knitting the chapter: -->
 
 <!-- Output created: /Users/davidkane/Desktop/projects/primer/junk/data.html -->
 <!-- Warning message: -->
 <!-- In readLines(file) : -->
-<!--   incomplete final line found on '/var/folders/mk/lh99bg295msg8myvcf5yczkc0000gn/T//Rtmpghqre9/file19e544177c18' -->
+<!--   incomplete final line found on '/var/folders/mk/lh99bg295msg8myvcf5yczkc0000gn/T//Rtmpghqre9/file19e544177c18' Goes with befinning and done. -->
 
-<!-- Fix references. -->
-
+<!-- Fix references. DONE -->
 
 Start by loading the packages which we will need in this chapter.
 
@@ -28,7 +27,6 @@ Start by loading the packages which we will need in this chapter.
 ```{r, message = FALSE}
 library(tidyverse)
 library(primer.data)
-library(lubridate)
 library(dbplyr)
 library(janitor)
 ```
@@ -53,6 +51,8 @@ github_url <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/i
 
 CSV files (and their counterparts) are easily transferable between computers and programming languages and are extremely simple because they're effectively just text files that have a special format. Additionally, they're very easy to parse through small amounts of data because they're easily readable by humans and computers. 
 However, due to their simple nature, CSV files are only able to move basic data and only as text values. They also have poor support for special characters like commas, which can make the dataset harder to organize and understand by adding a new column for a few specific entries. This make CSV files good for sharing data between computers and languages, but not efficient for transporting or saving large amounts of data.
+
+In this section, we'll be going over the common file formats and how we can pull data from these files into R.
 
 #### Reading and writing from a CSV file
 
@@ -108,8 +108,8 @@ Consider the following csv file: `test_2.csv`. Here's what it looks like as a te
 # on the web.
 
 file_2 <- paste0(github_url, "test_2.csv")
-  
-readLines(file_2, warn = FALSE)
+
+readLines(file_2)
 ```
 
 As you can see, there is text at the top of this file. Often times information about how data was collected, or other relevant information, is included at the top of the data file. However, `read_csv()` can't differentiate between this text and the data that we want to read, causing it to fail and output gibberish.
@@ -149,18 +149,21 @@ read_csv(file = file_2,
 
 You can also change the column arguments so that you get the data type that you want.
 Take `test_7.csv`.
+
 ```{r}
-file_3 <- paste0(github_url, "test_7.csv")
+test_7 <- paste0(github_url, "test_7.csv")
 
 read_csv(file_3)
 ```
 
 Let's try parsing this so that the `student` column is a factor and the `grade` column is an integer.
+
 ```{r}
-read_csv(file_3,
+read_csv(test_7,
          col_types = cols(grade = col_integer(),
                           student = col_factor()))
 ```
+
 By being clever with the columns, we can make our lives easier down the line when we graph the data.
 
 We can also manipulate other arguments for CSV files.
@@ -170,28 +173,54 @@ Let's try changing the column names in the `test_3.csv` file.
 As you can see below, the file doesn't have any column names, resulting in the first row being considered as the names for the rest of the file.
 
 ```{r}
-file_4 <- paste0(github_url, "test_3.csv")
+file_3 <- paste0(github_url, "test_3.csv")
 
-read_csv(file_4)
+read_csv(file_3)
 ```
 
 We can fix this by changing the `col_names` argument.
 ```{r}
-read_csv(file_4, col_names = c("a", "b", "c"))
+read_csv(file_3, col_names = c("a", "b", "c"))
 ```
 
 You can also create names automatically by setting `col_names` to FALSE
 ```{r}
-read_csv(file_4, col_names = FALSE)
+read_csv(file_3, col_names = FALSE)
 ```
 
 Changing the names of the columns allows for you to call on the columns later when the data is actually a tibble. Setting the column names to something that you can understand makes it much easier to understand your code later on.
 
-But what if we have good column names, they just aren't formatted correctly?
+But what if we have good column names, they just aren't formatted correctly? Let's look at `test_4.csv` for an example.
+
+<!-- AG: This currently relies on the renamed version for the test_4.csv file in primer.tutorials, so it won't work or knit correctly until that goes through -->
+
+```{r}
+file_4 <- paste0(github_url, "test_4.csv")
+
+file_4_tibble <- read_csv(file_4)
+file_4_tibble
+```
+
+As you can see, while the function does compile the names aren't easy to access. It's possible to access the column by using the ` tickmark like below:
+
+```{r}
+file_4_tibble$`one powers`
+```
+
+But that can still cause problems down the line and it's just annoying to use the backticks every time you want a column name. This is when we can use the `clean_names()` function from the **janitor** package. It essentially formats the column names so that they follow the [underscore separated naming convention](https://en.wikipedia.org/wiki/Snake_case#:~:text=Snake%20case%20(stylized%20as%20snake_case,subroutine%20names%2C%20and%20for%20filenames.) and are all unique.
+
+```{r}
+file_4_tibble <- file_4_tibble %>% 
+                   clean_names()
+file_4_tibble
+```
+
+This cleans the column names, saving you time when your file has a large amount of columns or you need to type a lot of column names. These issues are more common when you're pulling data off of the internet as that's normally dirty data and can have a lot of columns formatted in weird ways.
 
 <!-- The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. -->
 
-Another feature is the `na` argument.
+Another feature of `read_csv()` is the `na` argument.
+
 ```{r}
 file_5 <- paste0(github_url, "test_5.csv")
 
@@ -206,9 +235,10 @@ read_csv(file_5,
 ```
 
 You can also tell the code to ignore comment lines, which may be common in a csv file that was written by a human and as such has comments in it. `test_6.csv` is a perfect example of this. Here's what it looks like:
+
 ```{r, echo = FALSE}
 file_6 <- paste0(github_url, "test_6.csv")
-readLines(file_6, warn = FALSE)
+readLines(file_6)
 ```
 
 By setting the `comment` argument, we're able to skip lines that have a certain starting point.
@@ -247,7 +277,7 @@ read_delim(delim_1, delim = "|")
 
 You can often find CSV files on websites like [kaggle](https://kaggle.com) as well as by exporting from an Excel spreadsheet. Keep in mind that data imported off of the internet is often very messy, so try to use some of the functions listed here to clean it up. For a full list of arguments and in-depth documentation about the `read_csv()` function, please visit this [website](https://readr.tidyverse.org/reference/read_delim.html).
 
-<!-- DK: Put clean_names() example here or wherever you like. -->
+<!-- DK: Put clean_names() example here or wherever you like. DONE-->
 
 ### Excel files
 
@@ -610,7 +640,7 @@ This is possible in an SQL database. There are a couple of ways to run SQL code 
 
 
 ```{r}
-# This code is just copy-pasted and reformatted from the earlier dbplyr code so 
+# This code is just copy-pasted and reformatted from the earlier dbplyr code so
 # you can best understand it.
 
 dbGetQuery(con, "
@@ -730,8 +760,8 @@ LIMIT 10;
 ```
 
 ```{r}
-# You can't see this, but output.var = "band_albums_sql" in the chunk above this.
-# So we're outputting our data into band_albums_sql
+# You can't see this, but output.var = "band_albums_sql" in the chunk above
+# this. So we're outputting our data into band_albums_sql
 band_albums_sql
 ```
 
@@ -841,7 +871,7 @@ Let's try scraping the `Hello World` from the earlier HTML code.
 First off, we need to use the `minimal_html()` function so that we can get an R object that we can then work on. Think about it like changing the information from HTML code into something that R can understand.
 
 ```{r}
-# You can't use HTML code that's structured properly in R, so we condense it 
+# You can't use HTML code that's structured properly in R, so we condense it
 # into one line, like what's shown below.
 
 raw_html_1 <- "<html><p>Hello World</p></html>"
