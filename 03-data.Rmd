@@ -6,13 +6,13 @@
 
 <!-- TODO: -->
 
-<!-- Add skimr() and skim() to chapter 2. Simple one time use on a tibble. Explain what it does. At end of chapter before Summary. -->
+<!-- Add skimr() and skim() to chapter 2. Simple one time use on a tibble. Explain what it does. At end of chapter before Summary. DONE -->
 
 <!-- Use janitor::clean_names() in chapter 3. Simple example with a file with variable names like `my var` and `1-var`.  Read this in without fixing. Show how to use backticks to refer to those variables. Point out that this is annoying. Fix with clean_names(). -->
 
 <!-- Change all the files used so that they always have one blank line at the bottom to make that warning go away. Get rid of "warn" argument.  -->
 
-<!-- Fix references. -->
+<!-- Fix references. DONE -->
 
 
 Start by loading the packages which we will need in this chapter.
@@ -179,6 +179,8 @@ read_csv(file_4, col_names = FALSE)
 ```
 
 Changing the names of the columns allows for you to call on the columns later when the data is actually a tibble. Setting the column names to something that you can understand makes it much easier to understand your code later on.
+
+But what if we have good column names, they just aren't formatted correctly?
 
 <!-- The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. -->
 
@@ -789,7 +791,7 @@ Hello World
 
 looks like this in the result:
 
-<!-- AG: I added some CSS rules so that I can keep HTML in a box instead of leaving it out in the open. This knitted on my computer, but please tell me if it causes problems in the final build. [Change this to be declaritive.] -->
+<!-- These are CSS rules that allow you to draw a box around HTML elements. This helps to make them stand out from the rest of the primer and actually look like an output from a program. -->
 
 ```{css, echo = FALSE}
 .artificial-html-div {
@@ -819,9 +821,7 @@ Hello World
 
 Each tag defines an **element**, or a part of a website. For example, we used the `<p>` tag to define a paragraph element in HTML. We then close the paragraph by using the `</p>` tag, ending the paragraph. You can find a full list of HTML tags and elements [here](https://developer.mozilla.org/en-US/docs/Web/HTML/Element).
 
-<!-- AG: I'm pretty sure I can link to the rest of the book like what I did here. Just making sure since I'm not really sure about how to style a link to the rest of the book. -->
-
-Now, we're doing data science. And let's say you find some really cool website off of the internet that has a lot of really useful data, but there's no download file ([and it's legal to scrape off of it](https://ppbds.github.io/primer/data.html#are-you-allowed-to-scrape-that-website)). That means that you have to pull the information from the HTML code.
+Now, we're doing data science. And let's say you find some really cool website off of the internet that has a lot of really useful data, but there's no download file (and [it's legal to scrape from that website](#legal-to-scrape)). That means that you have to pull the information from the HTML code.
 
 We can do this by using the **`rvest`** package like I talked about earlier. This is essentially a package that allows you to scrape information from HTML code, allowing you to scrape the information off of the website overall.
 
@@ -1234,7 +1234,7 @@ From installing and using the selectorgadget as shown in the video above, we get
 
 However, when we're scraping from actual websites we need to take more than just the size of the code into consideration. We also need to take the legal aspects into account,
 
-#### Are you allowed to scrape that website?
+#### Are you allowed to scrape that website? {#legal-to-scrape}
 
 **BEFORE** scraping data from the web, you should always check whether or not you are **ALLOWED** to scrape it! There are two documents that are important for this: the robots.txt file (found by adding `/robots.txt` to the end of a URL like [so](https://www.craigslist.org/robots.txt)) and reading the website's Terms of Service document. The website's Terms of Service document is far and away the more important of the two because it's actually legally binding, so you should look there first. What happens when we look at Craigslist's Terms of Service document? Well we read this:
 
