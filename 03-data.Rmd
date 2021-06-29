@@ -99,6 +99,10 @@ file.remove("my_csv.csv")
 
 Sometimes, CSV files will not be what you want. Maybe they have the wrong column names, have information at the top of the file, or have comments interspersed within the file.
 
+<!-- AG: I may be going too overboard with the headers, is it ok to use `#####` or is four the limit? -->
+
+##### `skip`
+
 Consider the following csv file: `test_2.csv`. Here's what it looks like as a text file:
 
 ```{r, echo = FALSE}
@@ -132,6 +136,8 @@ read_csv(file = file_2,
 
 Now that we've gotten rid of the warnings, let's look at the other message R sends: the column specification message. 
 
+##### `col_types`
+
 The column specification message is a message that R sends to tell you what data types it is using for the column.
 
 Data types are the types discussed in Chapter 2 Wrangling, such as characters, factors, integers, and dates.
@@ -153,7 +159,7 @@ Take `test_7.csv`.
 ```{r}
 test_7 <- paste0(github_url, "test_7.csv")
 
-read_csv(file_3)
+read_csv(test_7)
 ```
 
 Let's try parsing this so that the `student` column is a factor and the `grade` column is an integer.
@@ -167,6 +173,8 @@ read_csv(test_7,
 By being clever with the columns, we can make our lives easier down the line when we graph the data.
 
 We can also manipulate other arguments for CSV files.
+
+##### `col_names` and `clean_names()`
 
 Let's try changing the column names in the `test_3.csv` file.
 
@@ -195,7 +203,7 @@ But what if we have good column names, they just aren't formatted correctly? Let
 <!-- AG: This currently relies on the renamed version for the test_4.csv file in primer.tutorials, so it won't work or knit correctly until that goes through -->
 
 ```{r}
-file_4 <- paste0(github_url, "test_4.csv")
+file_4 <- paste0(github_url, "test_3.csv")
 
 file_4_tibble <- read_csv(file_4)
 file_4_tibble
@@ -219,6 +227,8 @@ This cleans the column names, saving you time when your file has a large amount 
 
 <!-- The tutorial includes a lot of arguments like na and comment, but that makes the book feel like it's really long once it's actually put into text form with paragraphs and stuff. -->
 
+##### `na`
+
 Another feature of `read_csv()` is the `na` argument.
 
 ```{r}
@@ -233,6 +243,8 @@ read_csv(file_5)
 read_csv(file_5,
          na = ".")
 ```
+
+##### `comment`
 
 You can also tell the code to ignore comment lines, which may be common in a csv file that was written by a human and as such has comments in it. `test_6.csv` is a perfect example of this. Here's what it looks like:
 
@@ -250,6 +262,8 @@ read_csv(file_6, comment = "#")
 
 If you ever want to skip certain lines, just use the `comment` argument in order to designate it as something to be skipped. This is best used with cases where the `read_csv()` command will not compile without it.
 
+##### `read_delim()`
+
 So far, we've covered how we can organize CSV data, but at it's core we're working with comma separated values. But what happens when we want to read data from something that doesn't use commas to separate the values?
 
 When our tabular data comes in a different format, we can use the `read_delim()` function instead. For example, a different version of `test_6.csv` could exist that has no column names and uses pipes (`|`) as the delimiter instead of commas.
@@ -259,7 +273,7 @@ Here's another file named `delim_1`, which uses the `|` to separate the lines in
 ```{r, echo = FALSE}
 delim_1 <- paste0(github_url, "delim_1.txt")
 
-readLines(delim_1, warn = FALSE)
+readLines(delim_1)
 ```
 
 With `read_delim()`, we specify the first argument as the path to the file, as done with `read_csv()`. Then we provide values to the `delim` argument to have the code use `|` as the separator instead of the comma.
@@ -267,8 +281,8 @@ With `read_delim()`, we specify the first argument as the path to the file, as d
 ```{r}
 # Because delim_1 uses pipes to separate values, we can just use that as our
 # delim value. However, for more complex symbols like tab, we use something
-# different like "\\t" This varies for every symbol, but you can find most delim
-# values on the internet.
+# different like "\\t". This varies for every symbol, but you can find most
+# delim values on the internet.
 
 delim_1 <- paste0(github_url, "delim_1.txt")
 
@@ -281,7 +295,7 @@ You can often find CSV files on websites like [kaggle](https://kaggle.com) as we
 
 ### Excel files
 
-Excel is a spreadsheet program that use tables to analyze, store, or manipulate data. The tables are composed of cells which include text, numbers, or formulas. Excel files have the filename extension .xlsx. They store additional things that you cannot store in a .csv file such as fonts, text formatting, graphics, etc.
+Excel is a spreadsheet program that use tables to analyze, store, or manipulate data. The tables are composed of cells which include text, numbers, or formulas. Excel files have the filename extensions .xls or .xlsx, and they're capable of storing additional things that you cannot store in a .csv file such as fonts, text formatting, graphics, etc.
 
 In order to write excel files you have to install complex packages, and they are hard to create. Writing excel files is beyond the scope of Primer.
 
@@ -318,17 +332,16 @@ read_excel(path = "example_excel.xlsx")
 file.remove("example_excel.xlsx")
 ```
 
-
 If the .xlsx file has multiple sheets, you have to use the `sheet` argument to specify the sheet number or name. 
-The `read_excel()` function has arguments similar to the `read_csv()` function such as `col_names`, `col_types`, and `na`.
+The `read_excel()` function also has arguments similar to the `read_csv()` function such as `col_names`, `col_types`, and `na`.
 
 ### RDS files
 
 One very important aspect of R is saving objects into  RDS  files, which store a single R object into a file.
 These files allow us to save R objects such as plots and tibbles into R and then reload the object that it contains later without re-running the code that made it.
-This is especially useful for when you're dealing with bulk data and want to save the plot that comes with it for later.
+This is especially useful for when you're dealing with bulk data and want to save the plot that comes with it for later so that you don't have to do all of the data wrangling and plotting again.
 With a RDS file, you save the entire object, allowing you to do more things with it later without having to go through all of the code.
-However, RDS files are limited to R projects only, and they're often incomprehensible both to human eyes and to other programming languages. This makes RDS files ideal for saving objects temporarily in your own project or for sharing objects to other R users.
+However, RDS files are limited to R projects only, and they're incomprehensible both to human eyes and to other programming languages. This makes RDS files ideal for saving objects temporarily in your own project or for sharing objects to other R users.
 
 Take the following R object, a graph of the `iris` data set.
 
@@ -342,7 +355,7 @@ iris_p <- iris %>%
 iris_p
 ```
 
-When we save to a RDS file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. The end of the path argument is the name that you want to use for the file.
+When we save to a RDS file, we use the function `write_rds()`. Just like `write_csv()`, this function has two main arguments: `x` and `file`.  The `x` argument is the object that you want to save. The `file` argument is the file path where you want to save the file. This determines the name that you use for the file.
 
 ```{r}
 write_rds(x = iris_p, file = "iris_p.rds")
@@ -427,6 +440,8 @@ Databases are one of the most common methods of storing data, as they are capabl
 A relational database is a database that has the tables interact with one another based on common data, allowing you to create custom tables from an existing set of records. For example, a relational database may hold multiple tables that use the same ID to keep track of different information, like one table having an ID and a movie name while another has the ID and the rating. You can then combine those two in your code, creating a table with the ID, name, and rating. This allows the person who made the database to easily put in new data as well as allow you to pull out some data at a time without loading the entire database.
 
 It's common to use and interact with these databases in the real world due to most businesses using relational databases to keep track of their data and to update it at their leisure. It's not uncommon for databases to hold thousands or even millions of rows due to the need to keep track of data.
+
+In this section, we'll be going over how to pull data from these databases and how to interact with the data without using the entire database.
 
 ### Reading data from a SQLite database
 
@@ -602,6 +617,7 @@ FROM albums;
 ```
 
 You can then modify these queries to do operations like joins.
+
 ```{sql, connection = con}
 -- This does the same thing as the inner join from Chapter 2 Wrangling
 -- Here we're joining the albums and the artists table by the ArtistId column
@@ -637,7 +653,6 @@ slice(band_albums, 1:10)
 ```
 
 This is possible in an SQL database. There are a couple of ways to run SQL code in R, but the easiest way is by using the `dbGetQuery()` function from the **DBI** library.
-
 
 ```{r}
 # This code is just copy-pasted and reformatted from the earlier dbplyr code so
@@ -808,7 +823,6 @@ Before we jump into scraping, let's learn a little bit about what the "source co
 
 #### Website structure
 
-
 ```{r, echo = FALSE, fig.cap = "A little bit of HTML editing can bring you a long way."}
 knitr::include_graphics("03-data/images/nobel.png")
 ```
@@ -828,7 +842,7 @@ Hello World
 
 looks like this in the result:
 
-<!-- These are CSS rules that allow you to draw a box around HTML elements. This helps to make them stand out from the rest of the primer and actually look like an output from a program. -->
+<!-- These are CSS rules that allow you to draw a box around HTML elements. This helps to make them stand out from the rest of the primer and actually look like an output from a program rather than just plain text. -->
 
 ```{css, echo = FALSE}
 .artificial-html-div {
@@ -965,35 +979,31 @@ Now, let's say we want to get all of the information in the table but we don't w
 
 We can do this by only looking at the table (the `<table>` tag) and then getting the cells (the `<td>` tag). We'll also save this to a variable for later.
 
-<!-- AG: This just feels wrong, but it doesn't run any other way. So if I want to keep the HTML code syntax without going miles off screen, I'm going to be doing this. The error that it gives me is: `Error: unexpected `<` in "<"`. It's weird, dumb, and stops me from using the proper syntax without having to circumvent it. Check out R string constants. Cut, cut, cut! What really matters is the ability to grab data from a table on the web. -->
-
 ```{r}
-# We're using a trick here where every line of HTML is pasted together, allowing
-# us to keep the original syntax even though the line is super long.
-
-raw_html_2 <- paste0("<html>",
-                       "<table>",
-                         "<tr>",
-                           "<td>", 
-                             "This is some important info.",
-                           "</td>",
-                           "<td>",
-                             "This is some other important info.",
-                           "</td>",
-                         "</tr>",
-                         "<tr>",
-                           "<td>",
-                             "This is really important info.",
-                           "</td>",
-                           "<td>",
-                             "This is some useful information.",
-                           "</td>",
-                         "</tr>",
-                       "</table>",
-                       "<p>",
-                         "This is so useless, you shouldn't even be reading it.",
-                       "</p>",
-                     "</html>")
+raw_html_2 <- "<html>
+                 <table>
+                   <tr>
+                     <td>
+                       This is some important info.
+                     </td>
+                     <td>
+                       This is some other important info.
+                     </td>
+                   </tr>
+                   <tr>
+                     <td>
+                       This is really important info.
+                     </td>
+                     <td>
+                       This is some useful information.
+                     </td>
+                   </tr>
+                 </table>
+                 <p>
+                   This is so useless, you shouldn't even be reading it.
+                 </p>
+               </html>"
+raw_html_2
 
 # We use html_elements() to get all of the elements in the HTML file.
 
@@ -1059,13 +1069,16 @@ We can then use that ID in the HTML code.
 Now, there's a really clever trick that we can use here. Let's say that we only want that one piece of text that's colored red, but we don't know exactly where it is. We can actually use that CSS id to get that piece of text, using the same function `html_element()`. Just plug in the ID of the element that you want with a `#` in front to tell R that it's an ID.
 
 ```{r}
-raw_html_3 <- paste0("<p> This is not red :( </p>",
-                     "<p> This is not red :( </p>",
-                     "<p id = 'red-id'> Amazing! </p>",
-                     "<p> This is not red :( </p>",
-                     "<p> This is not red :( </p>",
-                     "<p> This is not red :( </p>",
-                     "<p> This is not red :( </p>")
+raw_html_3 <- "<html>
+                 <p> This is not red :( </p>
+                 <p> This is not red :( </p>
+                 <p id = 'red-id'> Amazing! </p>
+                 <p> This is not red :( </p>
+                 <p> This is not red :( </p>
+                 <p> This is not red :( </p>
+                 <p> This is not red :( </p>
+               </html>"
+
 raw_html_3 %>%
   minimal_html() %>%
   html_element("#red-id") %>%
@@ -1334,8 +1347,6 @@ raw_data_wiki
 ```
 
 Past this point, you can work with the data just like you would normal data. Here's an example graph of how states that have a denser population experience more consistent gun deaths than states with a less dense population.
-
-<!-- AG: I'm just providing the straight-up graph in this case so that the rest of the tutorial can just be copy-pasted into here. There's a lot of graph building exercises in the tutorial that honestly doesn't really fit in this chapter of the book, which is all about data. -->
 
 ```{r}
 clean_data <- raw_data_wiki %>%
