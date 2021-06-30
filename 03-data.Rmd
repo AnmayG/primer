@@ -815,7 +815,7 @@ knitr::include_graphics("03-data/images/tags.png")
 
 In the first part of this chapter, we learned how to read in data from plain text files that are usually "rectangular" in shape using the **tidyverse** `read_*` functions. Sadly, not all data comes in this simple format, but we can happily use many other tools to read in more messy/wild data formats. The formal name for gathering non-rectangular data from the web and transforming it into a more useful format for data analysis is **web scraping**.
 
-We can do web scraping through r by using the **`rvest`** library, which is a library that allows us to look at HTML and CSS selectors, then pick them apart to get the data we want. Let's look at what this means.
+We can do web scraping through r by using the **rvest** library, which is a library that allows us to look at HTML and CSS selectors, then pick them apart to get the data we want. Let's look at what this means.
 
 ### HTML and CSS selectors
 
