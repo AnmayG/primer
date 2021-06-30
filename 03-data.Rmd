@@ -1332,7 +1332,7 @@ source: https://www.craigslist.org/about/terms.of.use
 
 > Want to learn more about the legalities of web scraping and crawling? Read this interesting blog post titled ["Web Scraping and Crawling Are Perfectly Legal, Right?" by Benoit Bernard](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/) (this is optional, not required reading).
 
-<!-- AG: I'm kind of conflicted here because there's a perfectly good video that shows exactly how we can use SelectorGadget on Wikipedia pages, but it doesn't line up with the tutorials. For now, I'm going to comment out the video for future reference and just follow along with the tutorial. So maybe make them line up? -->
+<!-- AG: I'm kind of conflicted here because there's a perfectly good video that shows exactly how we can use SelectorGadget on Wikipedia pages, but it doesn't line up with the tutorials. For now, I'm going to comment out the video for future reference and just follow along with the tutorial. So maybe make them line up? I included my comments in my most recent pull request. -->
 
 So what to do now? Well, we can't scrape Craigslist, so we should find something else that allows you to scrape. Let's use a database from [Open Secrets about foreign-connected PACs within our country](https://www.opensecrets.org/political-action-committees-pacs/foreign-connected-pacs/2020).
 
@@ -1415,6 +1415,10 @@ ggplot(clean_data, aes(x = pop_tile, y = percent_rate)) +
 Webscraping is a powerful tool to gain data directly from the internet, but make sure that you're following the proper protocols so that you don't break the law and actually get the information that you need.
 
 ## Working with APIs
+
+```{r, echo = FALSE}
+knitr::include_graphics("03-data/images/api.png")
+```
 
 <!-- source used here: https://bookdown.org/rdpeng/RProgDA/reading-web-based-data.html -->
 
@@ -1509,6 +1513,27 @@ Information for this section on API's was taken from *Mastering Software Develop
 
 ## Summary
 
-
-
 <!-- One paragraph for each subsection. Each paragraph tries to provide a brief summary, including package names and key commands. -->
+
+*Pulling data into and out of R is a key factor in the data science process.*
+
+*Use files like CSV, Excel, RDS, JSON, and SQL files/databases to organize and share your data.*
+
+*Use SelectorGadget to pull data off of websites, but make sure it's legal to.*
+
+*Use an API when to get data from government agencies*
+
+This chapter is all about pulling data into R. It's not about graphing that data, cleaning it, wrangling it, or anything like that, it's just about pulling that data in without losing your mind.
+
+In this chapter, we looked at a few common file formats and used the **readr** package to read them and pull data from them so that we can use that data in our plots. This allowed us to download data from websites like [kaggle.com](https://kaggle.com) and use it in our dataset.
+
+We also looked at databases and how we can pull in a few select pieces of data from them so that we aren't overloading our computers with thousands or millions of data rows. We went over how we can write SQL queries so that we can acheive some special effects without causing errors or detonating our computers.
+
+And finally, we looked at how we can pull data from websites both through webscraping and through APIs, letting us pull data from the internet quickly and easily. This lets us find data for our projects and load it into our R session without having to create it ourselves or download a file from the internet.
+
+In the end, this chapter is about getting data from other people and using it inside your own projects. And make sure to use up to date data.
+
+```{r, echo = FALSE}
+knitr::include_graphics("03-data/images/suckville.png")
+```
+
