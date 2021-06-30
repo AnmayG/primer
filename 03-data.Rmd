@@ -827,16 +827,21 @@ Before we jump into scraping, let's learn a little bit about what the "source co
 knitr::include_graphics("03-data/images/nobel.png")
 ```
 
-Websites are coded in a language called **HTML**, or **H**yper**T**ext **M**arkup **L**anguage. This is the code that puts all of the information on the website, such as the numbers and text. These are the files created when we "knit" our .Rmd files and it's what makes them put information on the screen. When we're webscraping, we can look at the information on the website by looking at the HTML code.
+Websites are coded in a language called **HTML**, or **H**yper**T**ext **M**arkup **L**anguage. This is the code that puts all of the information on the website, such as the numbers and text. These are the files created when we "knit" our .Rmd files and it's what makes them put information on the screen. When we're webscraping, we can look at the information on the website by looking at the HTML code. You can try this out by yourself! Just go to any website and right-click, then press "Inspect". You'll be able to see the HTML code behind the website and even edit it to your liking!
 
-HTML uses many nested "tags" to organize the structure. For example, an html file like this:
+```{r, fig.cap="You can see the HTML code of a website and even edit it temporarily by inspecting the HTML code of the in"}
+knitr::include_graphics("03-data/images/html_inspect.gif")
+```
+
+HTML uses many nested "tags" to organize the structure. For example, an HTML file like this:
+
 ```{.html}
 <!-- This is using the HTML language. You don't actually put this in a chunk if 
 you want to put this in an Rmarkdown file, you can just type it straight in.-->
 <html>
-<p>
-Hello World
-</p>
+  <p>
+    Hello World
+  </p>
 </html>
 ```
 
@@ -874,7 +879,7 @@ Each tag defines an **element**, or a part of a website. For example, we used th
 
 Now, we're doing data science. And let's say you find some really cool website off of the internet that has a lot of really useful data, but there's no download file (and [it's legal to scrape from that website](#legal-to-scrape)). That means that you have to pull the information from the HTML code.
 
-We can do this by using the **`rvest`** package like I talked about earlier. This is essentially a package that allows you to scrape information from HTML code, allowing you to scrape the information off of the website overall.
+We can do this by using the **`rvest`** package like I talked about earlier. This is essentially a package that allows you to scrape information from HTML code, allowing you to scrape the information off of the complete website.
 
 ```{r, message = FALSE}
 library(rvest)
@@ -882,13 +887,14 @@ library(rvest)
 
 Let's try scraping the `Hello World` from the earlier HTML code.
 
-First off, we need to use the `minimal_html()` function so that we can get an R object that we can then work on. Think about it like changing the information from HTML code into something that R can understand.
+First off, we need to use the `minimal_html()` function so that we can get an R object that we can then work on. This is a temporary use because we're trying to  Think about it like changing the information from HTML code into something that R can understand.
 
 ```{r}
-# You can't use HTML code that's structured properly in R, so we condense it
-# into one line, like what's shown below.
-
-raw_html_1 <- "<html><p>Hello World</p></html>"
+raw_html_1 <- "<html>
+                 <p>
+                   Hello World
+                 </p>
+               </html>"
 raw_html_1 %>%
   minimal_html()
 ```
@@ -919,8 +925,6 @@ But websites, especially ones with useful data, don't just exist to state "Hello
 
 For example, doing this in HTML:
 
-<!-- AG: I'm wondering how closely I should stick to the tutorial problems. I know that we're going to be integrating them into each other soon, but the tutorial problems don't have as much information as I would like (such as the paragraph tags) and they're not as reusable (I can do both examples with one piece of code vs the two used in the tutorial). Right now, I'm going to use my own examples because I feel like it makes the section more understandable. Also, the tutorials shouldn't be too close to the primer since we're likely not going to be combining them too soon (I think) and I personally don't think that they should cover the exact same things with the exact same examples, especially for something as in-depth as HTML code. -->
-
 ```{.html}
 <html>
   <table>
@@ -929,7 +933,7 @@ For example, doing this in HTML:
         This is some important info.
       </td>
       <td>
-        This is some other important info.
+        This is some unimportant info.
       </td>
     </tr>
     <tr>
@@ -937,7 +941,7 @@ For example, doing this in HTML:
         This is really important info.
       </td>
       <td>
-        This is some useful information.
+        This is some other unimportant information.
       </td>
     </tr>
   </table>
@@ -951,27 +955,27 @@ Creates a table and a paragraph that looks like this:
 
 <div class = "artificial-html-div">
 <html>
-    <table>
-      <tr>
-        <td>
-          This is some important info.
-        </td>
-        <td>
-          This is some other important info.
-        </td>
-      </tr>
-      <tr>
-        <td>
-          This is really important info.
-        </td>
-        <td>
-          This is some useful information.
-        </td>
-      </tr>
-    </table>
-    <p class = "artificial-paragraph">
-      This is so useless, you shouldn't even be reading it.
-    </p>
+  <table>
+    <tr>
+      <td>
+        This is some important info.
+      </td>
+      <td>
+        This is some unimportant info.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        This is really important info.
+      </td>
+      <td>
+        This is some other unimportant information.
+      </td>
+    </tr>
+  </table>
+  <p class = "artificial-paragraph">
+    This is so useless, you shouldn't even be reading it.
+  </p>
 </html>
 </div>
 
@@ -987,7 +991,7 @@ raw_html_2 <- "<html>
                        This is some important info.
                      </td>
                      <td>
-                       This is some other important info.
+                       This is some unimportant info.
                      </td>
                    </tr>
                    <tr>
@@ -995,7 +999,7 @@ raw_html_2 <- "<html>
                        This is really important info.
                      </td>
                      <td>
-                       This is some useful information.
+                       This is some other unimportant information.
                      </td>
                    </tr>
                  </table>
@@ -1021,144 +1025,170 @@ td_tags[[2]] %>%
   html_text2()
 ```
 
-However, what if we want only a specific column or type of tag? That's what CSS selectors are for.
+This method is what you'd use if you just wanted to get all of the information inside of a specific table without filtering any data out. This is because pulling directly from the HTML makes a lot more sense in this scenario than fiddling around with other junk. Just pull the data and go, no fancy things.
+
+However, what if we want only the important information in that table? That's what CSS selectors are for.
 
 #### CSS selectors
 
-**CSS**, or **C**ascading **S**tyle **S**heets, is a coding language that defines the style of webpages. You may have noticed earlier that the HTML code we output earlier was drab and boring. But websites aren't drab and boring, they're fun and exciting! They do this by using CSS to add special rules to specific elements.
+**CSS**, or **C**ascading **S**tyle **S**heets, is a coding language that defines the style of webpages. You may have noticed earlier that the HTML code we output earlier was just black and white. But websites aren't black and white, they have colors and other cool things. They do this by using CSS to add special rules to specific elements.
 
-Now, there are a number of ways to do this. The first one is by using an **ID** to tell the webpage that they want this specific element to be a specific style. We can see an example of this below, where we set the element with the ID `red-id` to be red.
+Now, there are a number of ways to do this. The first one is by using a **class** to tell the webpage that you want all of these elements to have the same style. CSS classes are a way for multiple elements to have the same style, rather than being limited to a unique ID. We can see an example of this below, where we set the elements with the class `good-info` to be green and the class `amazing-info` to have a pale red background.
 
-<!-- AG: This is a version that's very different from that of the tutorial because the examples there aren't great for explaining CSS selectors. There's no explanation and you end up just following the tutorial without really understanding anything (at least that's what I felt like, and what my experience as a TF showed). As such, I'm using custom examples and I'm only going to use the tutorial explanation at the end. This may interfere with future work though. -->
+<!-- AG: This is extremely cut down from the previous version, I'm only going to include the stuff about CSS changing the color and being clever. -->
 
 ```{css}
 /*This uses the `css` language instead of the R language. You can use this
   code in an Rmarkdown file by substituting the "r" for "css" in the top 
   brackets*/
   
-#red-id {
-  color: red
+.good-info {
+  color: green
+}
+  
+.amazing-info {
+  background-color: lightpink
 }
 ```
 
-We can then use that ID in the HTML code.
+We can then use that class in the HTML code.
 
 ```{.html}
 <html>
-<p> This is not red :( </p>
-<p> This is not red :( </p>
-<p id = 'red-id'> Amazing! </p>
-<p> This is not red :( </p>
-<p> This is not red :( </p>
-<p> This is not red :( </p>
-<p> This is not red :( </p>
+  <table>
+    <tr>
+      <td class = 'good-info'>
+        This is some important info.
+      </td>
+      <td>
+        This is some unimportant info.
+      </td>
+    </tr>
+    <tr>
+      <td class = 'good-info amazing-info'>
+        This is really important info.
+      </td>
+      <td>
+        This is some other unimportant information.
+      </td>
+    </tr>
+  </table>
+  <p>
+    This is so useless, you shouldn't even be reading it.
+  </p>
 </html>
 ```
 
 <div class = "artificial-html-div">
 <html>
-<p class = "artificial-paragraph"> This is not red :( </p>
-<p class = "artificial-paragraph"> This is not red :( </p>
-<p class = "artificial-paragraph" id = 'red-id'> Amazing! </p>
-<p class = "artificial-paragraph"> This is not red :( </p>
-<p class = "artificial-paragraph"> This is not red :( </p>
-<p class = "artificial-paragraph"> This is not red :( </p>
+  <table>
+    <tr>
+      <td class = 'good-info'>
+        This is some important info.
+      </td>
+      <td>
+        This is some unimportant info.
+      </td>
+    </tr>
+    <tr>
+      <td class = 'good-info amazing-info'>
+        This is really important info.
+      </td>
+      <td>
+        This is some other unimportant information.
+      </td>
+    </tr>
+  </table>
+  <p class = "artificial-paragraph">
+    This is so useless, you shouldn't even be reading it.
+  </p>
 </html>
 </div>
+<br>
 
-Now, there's a really clever trick that we can use here. Let's say that we only want that one piece of text that's colored red, but we don't know exactly where it is. We can actually use that CSS id to get that piece of text, using the same function `html_element()`. Just plug in the ID of the element that you want with a `#` in front to tell R that it's an ID.
+Now, there's a really clever trick that we can use here. Let's say that we only want the table cells that are important, but we don't know exactly where they are (we only know their class). Well in most cases, the data you want will be a different color, like what we see in the data above. Think about it like making **important information** have a bold font to make it stand out. CSS makes all of the **information** bold by assigning it a specific class, so we can just look for everything that has that class and pull it out so that we only get the **important** information. We can do this by using `html_elements()`. Just plug in the class of the element that you want with a `.` in front to tell R that it's an class.
 
 ```{r}
 raw_html_3 <- "<html>
-                 <p> This is not red :( </p>
-                 <p> This is not red :( </p>
-                 <p id = 'red-id'> Amazing! </p>
-                 <p> This is not red :( </p>
-                 <p> This is not red :( </p>
-                 <p> This is not red :( </p>
-                 <p> This is not red :( </p>
+                 <table>
+                   <tr>
+                     <td class = 'good-info'>
+                       This is some important info.
+                     </td>
+                     <td>
+                       This is some unimportant info.
+                     </td>
+                   </tr>
+                   <tr>
+                     <td class = 'good-info amazing-info'>
+                       This is really important info.
+                     </td>
+                     <td>
+                       This is some other unimportant information.
+                     </td>
+                   </tr>
+                 </table>
+                 <p>
+                   This is so useless, you shouldn't even be reading it.
+                 </p>
                </html>"
 
 raw_html_3 %>%
   minimal_html() %>%
-  html_element("#red-id") %>%
+  html_elements(".good-info") %>%
   html_text2()
 ```
 
-Now, we talked about using IDs for getting an element, but what about if we want multiple elements to be formatted the same way? We can just use classes!
+You can sort by multiple classes by just chaining them together.
 
-CSS classes are a way for multiple elements to have the same style, rather than being limited to a unique ID. Elements can also have multiple classes that combine all of the styles together.
+```{r}
+raw_html_3 %>%
+  minimal_html() %>%
+  html_elements(".good-info.amazing-info") %>%
+  html_text2()
+```
+
+Webpages will also use something called an **ID** to change the color of a specific element. Do the same thing but this time with a "#" at the beginning to signify that it's a symbol.
 
 ```{css}
-.red-class {
+.red-id {
   color: red
-}
-
-.green-bg {
-  background-color: palegreen
 }
 ```
 
 ```{.html}
 <html>
-<p class = 'green-bg'> This is green :) </p>
-<p class = 'red-class'> This is red :) </p>
-<p class = 'red-class green-bg'> Amazing! </p>
-<p class = 'red-class'> This is red :) </p>
-<p> This is not red :( </p>
-<p class = 'green-bg'> This is green :) </p>
-<p> This is not red :( </p>
+<p id = "red-id"> This is red! </p>
+<p> This is not red. </p>
 </html>
 ```
 
 <div class = "artificial-html-div">
 <html>
-<p class = 'green-bg  artificial-paragraph'> This is green :) </p>
-<p class = 'red-class  artificial-paragraph'> This is red :) </p>
-<p class = 'red-class green-bg  artificial-paragraph'> Amazing! </p>
-<p class = 'red-class  artificial-paragraph'> This is red :) </p>
-<p class = 'artificial-paragraph'> This is not red :( </p>
-<p class = 'green-bg  artificial-paragraph'> This is green :) </p>
-<p class = 'artificial-paragraph'> This is not red :( </p>
+<p id = "red-id" class = "artificial-paragraph"> This is red! </p>
+<p class = "artificial-paragraph"> This is not red. </p>
 </html>
 </div>
-
-We can do the same thing with classes that we did with IDs, using `html_elements()` to sort through them. You use a `.` instead of a `#` to show that it's a class. In order to sort by multiple classes, just combine the statements together. If you want to get all of the elements from multiple classes, use a comma to separate them.
-
-```{r}
-raw_html_4 <- paste0("<html>",
-                     "<p class = 'green-bg'> This is green :) </p>",
-                     "<p class = 'red-class'> This is red :) </p>",
-                     "<p class = 'red-class green-bg'> Amazing! </p>",
-                     "<p class = 'red-class'> This is red :) </p>",
-                     "<p> This is not red :( </p>",
-                     "<p class = 'green-bg'> This is green :) </p>",
-                     "<p> This is not red :( </p>",
-                     "</html>")
-
-raw_html_4 %>%
-  minimal_html() %>%
-  html_elements(".red-class") %>%
-  html_text2()
-
-raw_html_4 %>%
-  minimal_html() %>%
-  html_elements(".red-class.green-bg") %>%
-  html_text2()
-
-raw_html_4 %>%
-  minimal_html() %>%
-  html_elements(".red-class, .green-bg") %>%
-  html_text2()
-```
+<br>
 
 So far, we've covered 3 ways to find the parts of a website through it's HTML code: the element (`<p>`), the ID (`#red-id`), and the class (`.red-class`). However, we can also mix-and-match these tags. Take the following HTML element:
 
 ```{.html}
+<html>
 <a href="https://ppbds.github.io/primer/index.html" id="abcd1234" class="hello hi">
 link to primer
 </a>
+</html>
 ```
+
+<div class = "artificial-html-div">
+<html>
+<a href="https://ppbds.github.io/primer/index.html" id="abcd1234" class="hello hi artificial-paragraph">
+link to primer
+</a>
+</html>
+</div>
+<br>
 
 We can try accessing it through the normal methods, like so:
 
@@ -1177,13 +1207,16 @@ raw_html_5 %>%
 
 raw_html_5 %>%
   minimal_html() %>%
-  html_element(".hello.hi") %>%
+  html_element(".hello") %>%
   html_text2()
 ```
 
 Or we can mix and match them to make an even more narrow search by chaining them together.
 
 ```{r}
+# Keep in mind that IDs (the # part) are usually unique to that element only, so
+# there's not really a point in filtering it even more when it's already unique.
+
 raw_html_5 %>%
   minimal_html() %>%
   html_element("a#abcd1234") %>%
@@ -1202,6 +1235,11 @@ raw_html_5 %>%
 raw_html_5 %>%
   minimal_html() %>%
   html_element(".hello#abcd1234") %>%
+  html_text2()
+
+raw_html_5 %>%
+  minimal_html() %>%
+  html_element("a.hello.hi#abcd1234") %>%
   html_text2()
 ```
 
@@ -1470,5 +1508,7 @@ If an R package doesn’t exist for an open API and you’d like to write your o
 Information for this section on API's was taken from *Mastering Software Development in R* textbook, authored by Roger D. Peng, Sean Kross, and Brooke Anderson. 
 
 ## Summary
+
+
 
 <!-- One paragraph for each subsection. Each paragraph tries to provide a brief summary, including package names and key commands. -->
