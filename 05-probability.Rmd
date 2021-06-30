@@ -1,25 +1,17 @@
 # Probability {#probability}
 
+<!-- Joint distribution in disease example and marble example are wrong. Change disease example so that we have 50% accurate if you have the diseases and 99% accurate if you don't. -->
+
 <!-- When building the chapter, we don't want rayshader images to pop up? -->
-
-<!-- Make this warning go away: Warning in make_shadow(heightmap, shadowdepth, shadowwidth, background, : -->
-<!-- ## `magick` package required for smooth shadow--using basic shadow instead. -->
-
-<!-- Start thinking about how to expand the tutorials. What should they cover so that students start to think about probability and distributions easily and naturally? Do the chapter 4 tutorials. Including the written answers.  -->
-
-<!-- Introduce the concepts of population and, maybe, exchangeability. Need to set the stage for making an assumption about one population in chapter 6. -->
-
-<!-- Explain map_* functions. Maybe we don't need list-columns? Or should we keep them? Or maybe we should change the code around so that they are not necessary? -->
 
 <!-- Learn about movies in rayshader. -->
 
-<!-- Consider the parallel structure of the 2-model, 3-model, and n-model case. First, we should always begin by discussing how to create the joint distribution of possible models and possible experimental results. This is done by, first, assuming that one of the models is true and then, second, show the variation in the world which results. That is, even if we know for a fact that you do not have the disease, there is still a chance that you test will come back positive. So, we should do that for one model. Then, we create the joint distribution by doing that same thing for all possible models. (We show all this code.) The joint distribution is a tibble which we are happy to look at. It always has two columns: the first is the possible models and the second is one possible result (which will vary) if that model is true. So, each possible model will have 1,000 (or at least 100) rows in the joint distribution. Do you agree that we have done this? If so, rewrite this comment and place it as a comment at the start of two models so that future authors know what we are doing. And the next two comments as well. -->
+<!-- Make this warning go away: Warning in make_shadow(heightmap, shadowdepth, shadowwidth, background, : `magick` package required for smooth shadow--using basic shadow instead. .-->
 
-<!-- Having create the joint distribution, we graph it in two dimensions. (We show the code for that.) Then, we graph it in three dimensions with rayshader. (Maybe there is a movie. Maybe we swoop in and fly around it.) Then, we take a "slice" of that joint distribution via rayshader. Move that slice around. Et cetera. Not sure how to do all that . . . Note that you can make rayshader objects interactive with rgl::rglwidget(). The ggral (sp?) package might also be useful. -->
+<!-- Introduce the concepts of population and, maybe, exchangeability. Need to set the stage for making an assumption about one population in chapter 6
+Could includes population in two models where we simulate the results for 100,000 people of testing data for the disease (prolophobia), the 100,000 people is the size of our population which is also the N in chapter 6 . -->
 
-<!-- After rayshader, we then use the joint distribution to make two graphics, showing the posterior distribution for the model. The first is unnormalized and the second is normalized. In both cases, we begin with the joint distribution --- an object we have saved --- and then use filter to get our slice. Maybe all this can be done in a rayshader movie as well. -->
 
-<!-- Enough for today. -->
 
 <!-- Should each section also do something with the resulting posterior? Use it to answer a question. Yes! Again, the N Model example is currently the best example. Note how this connects to the Temperance examples in each chapter. Maybe make this explicit? -->
 
@@ -61,6 +53,8 @@ library(tidyverse)
 
 library(rayshader)
 library(rgl)
+library(tidyverse)
+library(magick)
 ```
 
 ## List-columns and map functions
@@ -114,6 +108,8 @@ tibble(col_1 = list(range(x))) %>%
 `map_*` functions, like `map_dbl()` in this example, take two key arguments, `.x` (the data which will be acted on) and `.f` (the function which will act on this data). Here, `.x` is the data in `col_1`, which is a list-column. `.f` is the function `sum()`. However, we can not simply write `map_dbl(col_1, sum)`. Instead, each use of `map_*` functions requires the use of a tilde --- a `~` --- to indicate the start of the function and the use of a dot --- a `.` --- to specify where the data goes in the function.
 
 `map_*` functions are a family of functions, with the suffix specifying the type of the object to be returned. `map()` itself returns a list. `map_dbl()` returns a double. `map_int()` returns an integer. `map_chr()` returns a character, and so on.
+
+To summarise `map` function and `map_`* functions could both convert an data (vector or list) with the specific denoted functions or formula you set, and always results in list we called the  "list Column". There are two arguments in the `map()` function as well as `map_*()` function the `.x` and `.f`, the `.x` and `.f` placed in the `map()` functions and `map_*()`functions like this `map(.x,.f)`, where `.x` could either be a list or a vector, and `.f` either be a direct function like `.f=mean`, or an formula like `.f= ~mean(.x)`, remember to put the `~` if you are using `.f` an formula, the difference between `map` and `map_*` function is when you know and want the outcome of the data to be specific data vector like (`double`, `logical`,`character`,`integer`) rather than an general `list` in `map()`, you can use `map_*` instead of `map` to organized your list column.
 
 
 ```{r}
@@ -323,8 +319,6 @@ tibble(sum = c(rep(c(2, 12), 1),
 ```
 
 We get an *empirical distribution* by rolling two dice a hundred times, either by hand or with a computer simulation. The result is not identical to the mathematical distribution because of the inherent randomness of the real world and/or of simulation. 
-
-<!-- YW: Empirical distribution-data based on trial/simulation -->
 
 ```{r}
 # In the coin example, we create the vector ahead of time, and then assigned
@@ -695,7 +689,6 @@ Joint distributions are also mathematical objects that cover a set of outcomes, 
 
 Let's say that you are rolling two six-sided dice simultaneously. Die 1 is weighted so that there is a 50% chance of rolling a 6 and a 10% chance of each of the other values. Die 2 is weighted so there is a 50% chance of rolling a 5 and a 10% chance of rolling each of the other values. Let's roll both dice 1,000 times. In previous examples involving two dice, we cared about the sum of results and not the outcomes of the first versus the second die of each simulation. With a joint distributions, the order matters; so instead of 11 possible outcomes on the x-axis of our distribution plot (ranging from 2 to 12), we have 36. Furthermore, a 2D probability distribution is not sufficient to represent all of the variables involved, so the joint distribution for this example is displayed using a 3D plot.
 
-<!-- YW: Why we need a 3D plot is it why 2D isn't sufficient enough, abit confused here why is it not sufficient?. -->
 ```{r, echo = FALSE}
 # DK: Revisit and clean up this code.
 
@@ -733,7 +726,7 @@ plot_gg(mtplot,
         sunangle = 225, # Angle of sunshine for shadows (0-360°)
         soliddepth = -50, # Thickness of pane (always <0, the smaller the thicker)
         windowsize = c(2048,1536)) # Resolution
-
+Sys.sleep(0.2)
 
 # Step 4: Embed plot in Rmd file.
 
@@ -795,9 +788,18 @@ How would you express this in statistical notation? $\text{Prob}(A|B)$ is the sa
 
 ## Two models
 
-The simplest possible setting for inference involves two models --- meaning two possible states of the world --- and two outcomes from an experiment. Imagine that there is a disease --- *Probophobia*, an irrational fear of probability --- which you either have or don't have. We don't know if you have the diseases, but we do assume that there are only two possibilities. We also know that 1% of the people in the population suffer from Probophobia. Woe is them!
+<!-- Consider the parallel structure of the 2-model, 3-model, and n-model case. First, we  begin by discussing how to create the joint distribution of possible models and possible experimental results. This is done by, first, assuming that one of the models is true and then, second, show the variation in the world which results. That is, even if we know for a fact that you do not have the disease, there is still a chance that you test will come back positive.
 
-We also have a test which is 95% accurate. This is our experiment, one with only two possible outcomes: positive and negative. 
+ Then, we create the joint distribution by doing that same thing for all possible models. (We show all this code.) The joint distribution is a tibble which we are happy to look at. It always has two columns: the first is the possible models (have disease) and the second is one possible result (test_positive) if that model is true. And that each possible model have at least 1,000 rows in the joint distribution.. -->
+
+
+<!-- Having create the joint distribution, we graph it in two dimensions. (We show the code for that.) Then, we graph it in three dimensions with rayshader. (We have a rough movie.) Then, we take a "slice" of that joint distribution via rayshader (Have the movie but needs improvement). Move that slice around. Et cetera. Not sure how to do all that . . . Note that you can make rayshader objects interactive with rgl::rglwidget(). The ggral (sp?) package might also be useful (Did not use ggral yet to create rayshader 3D). -->
+
+<!-- After rayshader, we then use the joint distribution to make two graphics, showing the posterior distribution for the model. The first is unnormalized and the second is normalized. In both cases, we begin with the joint distribution --- an object we have saved --- and then use filter to get our slice. Both graph and unromalized and normalized were made in 2D, could considered using rayshader/movie. -->
+
+The simplest possible setting for inference involves two models --- meaning two possible states of the world --- and two outcomes from an experiment. Imagine that there is a disease --- *Probophobia*, an irrational fear of probability --- which you either have or don't have. We don't know if you have the diseases, but we do assume that there are only two possibilities. 
+
+We also have a test which is 50% accurate when giving test to an person who have *Probophobia*, and 99% accurate for people who don't. This is our experiment, one with only two possible outcomes: positive and negative. 
 
 Question: *If you test positive, what is the probability that you have Probophobia?*
 
@@ -832,23 +834,26 @@ set.seed(9)
 # the code every time you want to change it. When testing this code, we would
 # set `sims` to a number like 3, just to make sure everything is working.
 
-sims <- 100000
+sims <- 10000
 
 # Pipes generally start with tibbles, so we start with a tibble which just
 # includes an ID variable. We don't really use ID. It is just handy for getting
 # organized. We call this object `jd_disease`, where the `jd` standds for
 # *j*oint *d*istribution.
 
-jd_disease <- tibble(ID = 1:sims) %>% 
   
   # For each ID, we (randomly!) determine whether or not the person has
   # Probophobia. In the population, the rate is only 1%, thus explaining the
   # `prob` value of 0.01. Note that the call to `rbinom()` does not use the
   # value of the `ID` variable. 
   
-  mutate(have_disease = map_int(ID, ~ rbinom(n = 1, 
-                                             size = 1, 
-                                             prob = 0.01))) %>% 
+  # mutate(disease_yes = map_int(ID, ~ rbinom(n = 1,
+  #                                            size = 1,
+  #                                            prob = 0.50))) %>%
+  # mutate(disease_no = map_int(ID, ~ rbinom(n = 1,
+  #                                            size = 1,
+  #                                            prob = 0.01)))
+
   
   # For each person, we (randomly!) decide whether or not their test comes back
   # positive. The test is 95% accurate, explaining the use of 0.95 in
@@ -859,61 +864,69 @@ jd_disease <- tibble(ID = 1:sims) %>%
   # 0, meaning FALSE, meaning that we assign the opposite value --- generated by
   # `! .` --- of `have_disease`. The use of `map_int()` ensures that we get a 0
   # or 1 as the return value.
+
   
-  mutate(test_positive = map_int(have_disease,
-                                 ~ ifelse(rbinom(n = 1, 
-                                          size = 1, 
-                                          prob = 0.95),
-                                          .,
-                                          ! .)))
+
+ #mutate(no_disease = map_int(have_disease,
+                                 #~ ifelse(rbinom(n = 1, 
+                                          #size = 1, 
+                                          #prob = 0.50),
+                                          #.,
+                                          #! .)))
+
+
+jd_disease <- tibble(p = rep(seq(0.01, 0.5, 0.49), 10000)) %>%
+  mutate(disease = map_int(p, ~ rbinom(n = 1, size = 1, p = .)))
+
 
 jd_disease
 ```
 
-Most values for `have_diseases` are zero since 99% of the population does not suffer from Probophobia. Most of those will have a negative test result, meaning `test_positive = 0`. However, because the test is not perfect, some of those, like `ID = 8`,  will have a "false positive" result. Other individuals, like `ID = 10`, will have the diseases, and 95% of those will have a "true positive" result, as `10` does.
+<!-- Most values for `have_diseases` are zero since 99% of the population does not suffer from Probophobia. Most of those will have a negative test result, meaning `test_positive = 0`. However, because the test is not perfect, some of those, like `ID = 8`,  will have a "false positive" result. Other individuals, like `ID = 10`, will have the diseases, and 95% of those will have a "true positive" result, as `10` does. -->
+
+The first step is to simply create an tibble that consists of the simulated data we need to plot our distribution. Keep in mind that in the setting we have two different probabilities and they are completely separate from each other and we want to keep the two probabilities and the disease results in two and only two columns so that we can graph using the `ggplot()` function. And that's why we used the `rep` and `seq` functions when creating the table, we used the `seq` function to set the sequence we wants, in this case is only two numbers, 0.01 (99% accuracy for testing negative if no disease, therefore 1% for testing positive if no disease) and 0.5 (50% accuracy for testing positive/negative if have disease), then we used the `rep` functions to repeat the process 10,000 times for each probability.
 
 Plot the joint distribution:
 
 ```{r}
 jd_disease %>% 
-  ggplot(aes(x = as.factor(test_positive), 
-             y = as.factor(have_disease))) +
+  ggplot(aes(x = as.factor(disease), 
+             y = as.factor(p))) +
   geom_point() +
   geom_jitter(alpha = .2) +
   labs(title = "Unnormalized Distribution of Test Results and Disease Status",
-       subtitle = "Rare diseases have many false positives",
+       subtitle = "Many False results in have disease than no disease",
        x = "Test Result",
        y = "Disease Status") +
-  scale_x_discrete(breaks = c(0, 1), 
+  scale_x_discrete(breaks = c(0,1), 
                    labels = c("Negative", "Positive")) +
-  scale_y_discrete(breaks = c(0, 1), 
-                   labels = c("Negative", "Positive")) +
+  scale_y_discrete(breaks = c(0.01, 0.5), 
+                   labels = c("No Disease", "Have Disease")) +
   theme_classic()
 
 ```
 
-Below is a joint distribution displayed in 3D. Instead of using the "jitter" feature in R to unstack the dots, we are using a 3D plot to visualize the number of dots in each box. The number of people who correctly test negative is far greater than of the other categories. There are far fewer false positives and true positives -- and only a handful of false negatives. This is why we can barely see the 3D bar coming from those combinations.
+Below is a joint distribution displayed in 3D. Instead of using the "jitter" feature in R to unstack the dots, we are using a 3D plot to visualize the number of dots in each box. The number of people who correctly test negative is far greater than of the other categories. The 3D plot shows the total number of cases for each section (True positive, True negative, False positive, False negative),the 3D bar coming from those combinations. Now,pay attention to the two rows of the 3D graph, if you trying to add up the length of the 3D bar for the top two sections and the bottom two sections, they should be equal to each other, where each have 10,000 case. This is because we simulate the experience in two independent and separate world one in the have-disease world and one in the no-disease world.
 
-<!-- YW: Why we need 3D for this one? I found that the 4 box in the plot easier to understand than the rayshader plot. -->
 
 ```{r, echo = FALSE}
 
 jd_disease_plot <- jd_disease %>%
-  group_by(test_positive, have_disease) %>%
+  group_by(p, disease) %>%
   summarize(total = n(),
             .groups = "drop") %>% 
-  ggplot(aes(x = as.factor(test_positive),
-             y = as.factor(have_disease),
+  ggplot(aes(x = as.factor(disease),
+             y = as.factor(p),
              color = total)) +
     geom_point(size = 5) +
     scale_x_discrete(breaks = c(0, 1),
                      labels = c("Negative", "Positive")) +
-    scale_y_discrete(breaks = c(0, 1),
-                     labels = c("Negative", "Positive")) +
+    scale_y_discrete(breaks = c(0.01, 0.5),
+                     labels = c("No Disease", "Have Disease")) +
     labs(x = "Test Result",
          y = "Disease Status",
          title = "Unnormalized Distribution of Results and Status",
-         subtitle = "Rare diseases have many false positives",
+         subtitle = "Many False results in have disease than no disease",
          color = "Cases") +
     theme_classic() +
     theme(legend.position = "none",
@@ -948,21 +961,21 @@ We want to analyze these plots by looking at different slices. For instance, let
 
 ```{r}
 jd_disease %>% 
-  filter(test_positive == 1)
+  filter(disease == 1)
 ```
 
 **Most people who test positive do not have the disease!** This is a common result for rare diseases. We can easily create an unnormalized conditional distribution with:
 
 ```{r}
 jd_disease %>% 
-  filter(test_positive == 1) %>% 
-  ggplot(aes(have_disease)) +
+  filter(disease == 1) %>% 
+  ggplot(aes(p)) +
     geom_bar() +
     labs(title = "Disease Status Given Positive Test",
-         subtitle = "Rare diseases generates mostly false positives",
+         subtitle = "Almost all of the cases were infected",
          x = "Disease Status",
          y = "Count") +
-    scale_x_continuous(breaks = c(0, 1),
+    scale_x_continuous(breaks = c(0.01, 0.5),
                        labels = c("Healthy", "Infected")) +
   theme_classic()
 ```
@@ -974,22 +987,22 @@ Turn this unnormalized distribution into a posterior probability distribution:
 
 ```{r}
 jd_disease %>% 
-  filter(test_positive == 1) %>% 
-  ggplot(aes(have_disease)) +
+  filter(disease == 1) %>% 
+  ggplot(aes(p)) +
     geom_histogram(aes(y = after_stat(count/sum(count))), 
                    binwidth = 0.25, 
                    color = "white") +
     labs(title = "Posterior for Probophobia Conditional on Positive Test",
          x = "Probophobia Status",
          y = "Probability") +
-    scale_x_continuous(breaks = c(0, 1),
+    scale_x_continuous(breaks = c(0.01, 0.5),
                        labels = c("Healthy", "Infected")) +
     scale_y_continuous(labels = 
                          scales::percent_format(accuracy = 1)) +
     theme_classic()  
 ```
 
-Even with a positive test, you are more than 80% likely to be healthy.
+With a positive test, you can be almost 100% sure that you have Probophobia.
 
 <!-- DK: Insert a use of this posterior? How many positive tests before you have at least 10 sick people? -->
 
