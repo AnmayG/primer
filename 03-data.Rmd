@@ -6,6 +6,7 @@
 
 <!-- TODO: -->
 
+<!-- Add one paragraph Distill section, including links, like from Bootcamp page. Point toward tutorial. -->
 
 Start by loading the packages which we will need in this chapter.
 
