@@ -1426,8 +1426,6 @@ To get a certain set of weather data from the Iowa Environmental Mesonet, you ca
 
 When you are making an HTTP request using the `GET()` or `POST()` functions from the **httr** package, you can include the key-value pairs for any query parameters as a list object in the `query` argument of the function. For example, suppose you want to get wind speed in miles per hour (data = "sped") for Denver, CO, (station = "DEN") for the month of June 2016 (year1 = "2016", month1 = "6", etc.) in Denver’s local time zone (tz = "America/Denver") and in a comma-separated file (format = "comma"). To get this weather dataset, you can run:
 
-
-
 ```{r, message = FALSE}
 library(httr)
 ```
