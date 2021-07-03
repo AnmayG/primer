@@ -1,3 +1,8 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: inline
+---
 # Data {#data}
 
 *You can never look at the data too much.* -- Mark Engerman
@@ -1537,7 +1542,7 @@ Then, you need to put it into your website. Just go to the `_site.yml` file and 
 name: "."
 title: "title-of-your-website"
 description: |
-  This is my very cool website.
+  Welcome to the website. I hope you enjoy it!
 output_dir: "docs"
 navbar:
   right:
@@ -1553,6 +1558,10 @@ output: distill::distill_article
 ```
 
 The `_site.yml` is the file that keeps everything in line and organizes your distill website. *However, it's very specific as to the syntax, so you should take care to only add in specific things.* Additionally, keep in mind that you should always use the `create_article()` function whenever you need to create a new page or a .Rmd file. *Do not add in a .Rmd file manually.* These both lead to errors that can break your project.
+
+#### Formatting the article
+
+You can format the article just like you did before because it's still an RMarkdown file. However, you can also put more advanced features like block quotes [here](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf). Just make sure not to edit the headers at the top of the file without knowing exactly what you're doing in order to prevent any errors.
 
 #### `Error: $ operator is invalid for atomic vectors`
 
@@ -1601,7 +1610,7 @@ And finally, we looked at how we can pull data from websites both through webscr
 
 In the end, this chapter is about getting data from other people and using it inside your own projects.
 
-```{r, echo = FALSE, fig.cap="Make sure to use up to date data"}
+```{r, echo = FALSE, fig.cap="Make sure to use up to date data."}
 knitr::include_graphics("03-data/images/suckville.png")
 ```
 
