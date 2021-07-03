@@ -7,7 +7,7 @@
 <!-- TODO: -->
 
 <!-- Add one paragraph Distill section, including links, like from Bootcamp page. Point toward tutorial. DONE -->
-
+ 
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
 
 Start by loading the packages which we will need in this chapter.
