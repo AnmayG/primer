@@ -12,6 +12,10 @@ editor_options:
 <!-- TODO: -->
 
 <!-- Add one paragraph Distill section, including links, like from Bootcamp page. Point toward tutorial. DONE -->
+
+<!-- Any inspiration to be drawn from this: https://ubc-dsci.github.io/introduction-to-datascience/reading.html -->
+
+<!-- Add Google sheets examples? -->
  
 Getting data into and out of R is a major part of any real world data science project. There are multiple data formats that you use to transport this data, each with their own positives and negatives.
 
@@ -1499,7 +1503,13 @@ Information for this section on API's was taken from *Mastering Software Develop
 
 ## Distill
 
-<!-- AG: I'm not creative enough to make a smooth segue so just putting in the information with a temporary transition until I think of one. -->
+<!-- DK: Copied the below from bootcamp. Useful? -->
+
+<!-- [Distill for R Markdown](https://rstudio.github.io/distill/) is the main documentation page. Key sections are [Creating a Website](https://rstudio.github.io/distill/website.html) and [Publishing Websites](https://rstudio.github.io/distill/publish_website.html). Step-by-step guides include: -->
+
+<!--   + [Building a blog with distill](https://themockup.blog/posts/2020-08-01-building-a-blog-with-distill/) by Thomas Mock.   -->
+<!--   + [Building a {distill} website](https://lisalendway.netlify.app/posts/2020-12-09-buildingdistill/) by Lisa Lendway.   -->
+<!--   + [Create a distill website](https://aosmith16.github.io/spring-r-topics/materials.html#week-2-create-a-distill-website) and [More on distill articles and deploy website](https://aosmith16.github.io/spring-r-topics/materials.html#week-3-more-on-distill-articles-and-deploy-website) by Ariel Muldoon. -->
 
 <!-- Add one paragraph Distill section, including links, like from Bootcamp page. Point toward tutorial. -->
 
