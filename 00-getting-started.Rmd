@@ -2,7 +2,7 @@
 
 <!-- This is a test change for Github Actions. Another change -->
 
-<!-- At the end of RStudio set up, have them start a new project, and show them screen shots of putting the default folder someplace like ~/Desktop/projects. Not on OneDrive. -->
+<!-- At the end of RStudio set up, have them start a new project, and show them screen shots of putting the default folder someplace like ~/Desktop/projects. Not on OneDrive. DONE -->
 
 <!-- Add more material about Happy Git with R and how to use it. Add more material from R basics. They need to know how to create and knit an Rmd file. -->
 
@@ -178,15 +178,55 @@ library(usethis)
 use_blank_slate()
 ```
 
-<!-- DK: Give them a tour of hidden files in the Files tab. -->
+<!-- DK: Give them a tour of hidden files in the Files tab. DONE - In Creating R Projects -->
 
 This changes the default value of RStudio to start each session afresh, with no junk leftover from your last session. This makes it much easier to create a *reproducible* analysis. 
+
+### Creating R projects {-}
+
+<!-- AG: There aren't any subheadings in this section, so I'm not including them for now. It becomes pretty long without them though. -->
+
+Let's go over the basics of R coding.
+
+R is a programming language commonly used to analyze data. We can code in R in 2 ways:
+
+* By running R commands in the Console.
+
+* By creating an R project and running our R commands off of that.
+
+So far, we've been using R commands without creating a project since we only needed to run a couple of R commands at a time. However, this isn't very practical for more complicated projects that might need hundreds of lines of code. This is where we use R projects.
+
+First off, create a new folder to put your projects in. Feel free to name it what you want, but **make sure that there are no spaces or special characters**. This creates problems down the line when we're working with files.
+
+> Additionally, do NOT put the folder in OneDrive or a cloud file system. This prevents you from accessing certain files easily. Make sure to save the folder to your local drive.
+
+```{r, echo = FALSE, fig.cap = "Here's how to create a new projects folder on Windows."}
+knitr::include_graphics("00-getting-started/images/new_folder.gif")
+```
+
+<!-- AG: How do we structure menu commands? This is a very small problem but it'd be nice to have something standard. -->
+
+We can create an R Project by going to File -> New Project and following the dialogues. Make sure to keep your project in the folder that you just created.
+
+```{r, echo = FALSE, fig.cap = "For now, we won't be connecting the projects to GitHub, but you will need to do this for future projects."}
+knitr::include_graphics("00-getting-started/images/new_r_project.gif")
+```
+
+### R Markdown Files
+
+Now, we often use R to make graphs and other visualizations in order to find patterns within the data. However, it's not very useful to just create a graph and then not explain what it's actually showing. This is where R Markdown files come in.
+
+R Markdown files, or .Rmd files, are a type of file that can generate *reports* from R code. Basically, you can write both the graph and the explanation about the graph within the same file. You can then *knit* the file in order to render the text and make it all look nice.
+
+Let's walk through creating an R Markdown file.
+
+In order to create your 
 
 ### Tutorials {-}
 
 For each chapter of the textbook, there are one or more tutorials available in the **primer.tutorials** package. In order to access these tutorials, you should run `library(primer.tutorials)` in the R Console.
 
-<!-- DK: Need new png -->
+<!-- DK: Need new png DONE -->
 
 ```{r, echo = FALSE}
 knitr::include_graphics("00-getting-started/images/run_ppbds.png")
@@ -210,7 +250,6 @@ Now what? There are a few ways you can close out of a tutorial safely so you can
 
 * If you clicked "Show in new window" and were working on the tutorial in a pop-up window, simply X out of the pop-up window.  
 * If you were working on the tutorial inside the Tutorial pane of RStudio, simply press the red stop sign icon.   
-
 
 <!-- DK: Need a better way to end this chapter. -->
 
