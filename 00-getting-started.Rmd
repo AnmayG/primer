@@ -6,7 +6,7 @@
 
 <!-- Add more material about Happy Git with R and how to use it. Add more material from R basics. They need to know how to create and knit an Rmd file. DONE -->
 
-<!-- How should we end this chapter? Perhaps with some cool example graphics. Take this course to build these things? Perhaps even a curl() grab of an Rmd which they then knit into something cool. Maybe the plot from chapter 1? -->
+<!-- How should we end this chapter? Perhaps with some cool example graphics. Take this course to build these things? Perhaps even a curl() grab of an Rmd which they then knit into something cool. Maybe the plot from chapter 1? DONE? -->
 
 <!-- Update some of the graphics, especially since the tutorials now live in a different package. Need new gif for the tutorial save process. Or maybe the process is so simple now that we don't need a gif at all. DONE -->
 
@@ -339,3 +339,12 @@ usethis::use_blank_slate()
 * Created a project folder to place your R projects in.
 
 * Created a new R project and learned how to use R Markdown files.
+
+Let's get started.
+
+<!-- AG: Added a Star Wars meme at the end to correlate with the Yoda thing at the beginning. It's just a quick edit to make it end better for now, we can make it look better later. -->
+
+```{r, echo=FALSE}
+knitr::include_graphics("00-getting-started/images/ending.gif")
+```
+
