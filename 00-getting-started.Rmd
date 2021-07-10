@@ -8,7 +8,7 @@
 
 <!-- How should we end this chapter? Perhaps with some cool example graphics. Take this course to build these things? Perhaps even a curl() grab of an Rmd which they then knit into something cool. Maybe the plot from chapter 1? -->
 
-<!-- Update some of the graphics, especially since the tutorials now live in a different package. Need new gif for the tutorial save process. Or maybe the process is so simple now that we don't need a gif at all.  -->
+<!-- Update some of the graphics, especially since the tutorials now live in a different package. Need new gif for the tutorial save process. Or maybe the process is so simple now that we don't need a gif at all. DONE -->
 
 The world confronts us. Make decisions we must.
 
@@ -177,7 +177,7 @@ library(usethis)
 use_blank_slate()
 ```
 
-<!-- DK: Give them a tour of hidden files in the Files tab. -->
+<!-- DK: Give them a tour of hidden files in the Files tab. DONE -->
 
 This changes the default value of RStudio to start each session afresh, with no junk leftover from your last session. This makes it much easier to create a *reproducible* analysis. 
 
@@ -266,11 +266,13 @@ Finally, you can code in R Markdown by adding a code chunk. This allows you to p
 You can see an example of a code chunk in the default R Markdown file.  
 It looks like this:
 
-```{r, echo=FALSE}
-knitr::include_graphics("00-getting-started/images/code_chunk.png")
+````markdown
+```{r pressure, echo=FALSE}`r ''`
+plot(pressure)
 ```
+````
 
-And then renders like this:
+And knits like this:
 
 ```{r, echo=FALSE}
 knitr::include_graphics("00-getting-started/images/code_chunk_graph.png")
