@@ -15,7 +15,7 @@ editor_options:
 
 <!-- Any inspiration to be drawn from this: https://ubc-dsci.github.io/introduction-to-datascience/reading.html -->
 
-Anything useful here: https://ubc-dsci.github.io/introduction-to-datascience/reading.html
+<!-- Anything useful here: https://ubc-dsci.github.io/introduction-to-datascience/reading.html -->
 
 <!-- Add Google sheets examples? -->
  
@@ -30,10 +30,10 @@ library(dbplyr)
 library(janitor)
 ```
 
-You can find most of the files that we use for this chapter [here](https://github.com/PPBDS/primer.tutorials/tree/master/inst/www). We can also access these files by saving the URL to R and then using it so that we can download and access the files located on the internet.
+You can find most of the files that we use for this chapter [here](https://github.com/PPBDS/primer.tutorials/raw/master/inst/tutorials/031-data-files/data/). We can also access these files by saving the URL to R and then using it so that we can download and access the files located on the internet.
 
 ```{r}
-github_url <- "https://raw.githubusercontent.com/PPBDS/primer.tutorials/master/inst/www/"
+github_url <- "https://github.com/PPBDS/primer.tutorials/raw/master/inst/tutorials/031-data-files/data/"
 ```
 
 ## Reading and writing files
@@ -212,7 +212,7 @@ As you can see, while the function does compile the names aren't easy to access.
 file_4_tibble$`one powers`
 ```
 
-But that can still cause problems down the line and it's just annoying to use the backticks every time you want a column name. This is when we can use the `clean_names()` function from the **janitor** package. It essentially formats the column names so that they follow the [underscore separated naming convention](https://en.wikipedia.org/wiki/Snake_case#:~:text=Snake%20case%20(stylized%20as%20snake_case,subroutine%20names%2C%20and%20for%20filenames.) and are all unique.
+But that can still cause problems down the line and it's just annoying to use the backticks every time you want a column name. This is when we can use the `clean_names()` function from the **janitor** package. It essentially formats the column names so that they follow the [underscore separated naming convention](https://en.wikipedia.org/wiki/Snake_case) and are all unique.
 
 ```{r}
 file_4_tibble %>% 
