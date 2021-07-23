@@ -3,19 +3,22 @@
 
 ## Students
 
-Heather and Kevin -- chapter 1
-Ajay and Atilla -- chapter 2
-Anmay -- chapter 3
-Sophia and Arghayan -- chapter 4
+Heather (advanced plots and case studies) and Kevin (basic plots) -- chapter 1
+Ajay (data types), Atilla (plots) and Bryan (more plots)-- chapter 2
+Anmay and Shyamsai (files) -- chapter 3
+Sophia (shaming) and Arghayan (tables) -- chapter 4
 Yuhan -- chapter 5
 Ryan -- chapter 6
 George -- chapter 7
 Mahima -- chapter 8
-Bryan (?) -- chapter 9
 Mak -- Chapter 10
 Nuo Wen -- technical issues
 
 # Topics
+
+* https://clauswilke.com/dataviz/
+
+
 
 * Output created: docs/index.html
 Warning message:
@@ -195,7 +198,6 @@ https://github.com/jonspring/discontinuity/blob/master/fileb23c55435f90.gif
 
 ## Other Items
 
-Github Actions: https://orchid00.github.io/actions_sandbox/
 
 Prediction checks.
 
