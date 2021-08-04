@@ -288,9 +288,9 @@ You can often find CSV files on websites like [kaggle](https://kaggle.com) as we
 
 Excel is a spreadsheet program that use tables to analyze, store, or manipulate data. The tables are composed of cells which include text, numbers, or formulas. Excel files have the filename extensions .xls or .xlsx, and they're capable of storing additional things that you cannot store in a .csv file such as fonts, text formatting, graphics, etc.
 
-In order to write excel files you have to install complex packages, and they are hard to create. Writing excel files is beyond the scope of Primer.
+In order to write excel files you have to install complex packages, and they are hard to create. Writing excel files is beyond the scope of this Primer.
 
-This makes Excel files valuable because they're commonly accepted and usable (Microsoft Excel is a very common program), but they're also hard to use because you can't write new data into them. This makes Excel files more common for data that was originally in Excel, like accounting data or other spreadsheet applications.
+This makes Excel files valuable because they're commonly accepted and usable (Microsoft Excel is a very common program), but they're also hard to use because you can't write new data into them. As such, Excel files are common for data that was originally in Excel, like accounting data or other spreadsheet applications.
 
 Reading Excel files is easy. To do so, we use the `read_excel()` function from the **readxl** package.
 
@@ -327,6 +327,14 @@ file.remove("example_excel.xlsx")
 
 If the .xlsx file has multiple sheets, you have to use the `sheet` argument to specify the sheet number or name. 
 The `read_excel()` function also has arguments similar to the `read_csv()` function such as `col_names`, `col_types`, and `na`.
+
+### Google Sheets
+
+[Google Sheets](https://www.google.com/sheets/about/) is a cloud spreadsheet service that allows you to create and host data on the web in a spreadsheet without needing to use Excel. It's commonly used to store data from [Google Forms](https://www.google.com/forms/about/) and surveys, making it extremely useful for people who are inexperienced with spreadsheet and storage systems.
+
+<!-- AG: I think it would be cool to have a communal spreadsheet where people would write in new data about themselves like their name and age. May cause some people to just delete everything though, so I'd like some feedback on this. -->
+
+When it comes to R, we can both read Google Sheets data and write data into it
 
 ### RDS files
 
