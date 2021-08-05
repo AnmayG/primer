@@ -338,7 +338,7 @@ The `read_excel()` function also has arguments similar to the `read_csv()` funct
 
 <!-- [Google Sheets](https://www.google.com/sheets/about/) is a cloud spreadsheet service that allows you to create and host data on the web in a spreadsheet without needing to use Excel. It's commonly used to store data from [Google Forms](https://www.google.com/forms/about/) and surveys, making it extremely useful for people who are inexperienced with spreadsheet and storage systems. -->
 
-<!-- <!-- AG: I think it would be cool to have a communal spreadsheet where people would write in new data about themselves like their name and age. May cause some people to just delete everything though, so I'd like some feedback on this. --> -->
+<!-- AG: I think it would be cool to have a communal spreadsheet where people would write in new data about themselves like their name and age. May cause some people to just delete everything though, so I'd like some feedback on this. -->
 
 <!-- When it comes to R, we can both read Google Sheets data and write data into it by using the **googlesheets4** library. -->
 
@@ -433,7 +433,7 @@ The `read_excel()` function also has arguments similar to the `read_csv()` funct
 <!--   googledrive::drive_trash() -->
 <!-- ``` -->
 
-<!-- <!-- AG: Going to continue with writing section later. It's based on the documentation listed here: https://googlesheets4.tidyverse.org/articles/articles/write-sheets.html --> -->
+<!-- AG: Going to continue with writing section later. It's based on the documentation listed here: https://googlesheets4.tidyverse.org/articles/articles/write-sheets.html -->
 
 <!-- But what if we actually wanted to create a Google Sheet? -->
 
